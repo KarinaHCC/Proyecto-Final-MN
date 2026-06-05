@@ -470,6 +470,7 @@ function eliminarFilaC(i) {
   renderTablaC();
 }
 
+
 function runEscenarioC() {
   // Re-read values from inputs
   const rows = document.querySelectorAll('#tablaPreciosC .data-row');
@@ -521,22 +522,56 @@ function runEscenarioC() {
   const incremento = ((ys[ys.length-1] - ys[0]) / ys[0] * 100).toFixed(1);
   const maxPrecio = Math.max(...ys);
   const minPrecio = Math.min(...ys);
-
-  // Check if diaEstimar is in range
   const inRange = diaEstimar >= xMin && diaEstimar <= xMax;
+  
+  // Calcular error relativo estimado (basado en el punto más cercano)
+  const puntoMasCercano = puntos.reduce((prev, curr) => {
+    return (Math.abs(curr.dia - diaEstimar) < Math.abs(prev.dia - diaEstimar) ? curr : prev);
+  });
+  const errorRelativo = Math.abs((valorEstimado - puntoMasCercano.precio) / puntoMasCercano.precio * 100).toFixed(2);
 
-  let html = `
+  // --- NUEVO: Generar el HTML de resultados con estilo KPI cards ---
+  let htmlResultados = `
     <div class="result-title">Método: ${metodNombre}</div>
-    ${statRow('Precio estimado (día ' + diaEstimar + ')', 'Bs ' + fmt(valorEstimado, 2), '')}
-    ${!inRange ? alert_('warn', '⚠ El día solicitado está fuera del rango de datos (extrapolación)') : ''}
-    ${statRow('Incremento total del período', incremento + '%', +incremento > 20 ? 'danger' : 'safe')}
-    ${statRow('Precio mínimo registrado', 'Bs ' + minPrecio + ' (día ' + puntos.find(p=>p.precio===minPrecio).dia + ')')}
-    ${statRow('Precio máximo registrado', 'Bs ' + maxPrecio + ' (día ' + puntos.find(p=>p.precio===maxPrecio).dia + ')')}
-    ${statRow('Nº de puntos de datos', puntos.length)}
-    ${statRow('Confiabilidad', puntos.length >= 5 ? 'Alta (≥5 puntos)' : 'Media — agregar más datos mejora la precisión', puntos.length >= 5 ? 'safe' : '')}
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-label">Precio Estimado (Día ${diaEstimar})</div>
+        <div class="kpi-value">Bs. ${fmt(valorEstimado, 2)}</div>
+        ${!inRange ? '<div class="kpi-sub">⚠️ Extrapolación</div>' : '<div class="kpi-sub">Interpolado</div>'}
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Incremento Total</div>
+        <div class="kpi-value">${incremento}%</div>
+        <div class="kpi-sub">Bs ${minPrecio} → Bs ${maxPrecio}</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Puntos de Datos</div>
+        <div class="kpi-value">${puntos.length}</div>
+        <div class="kpi-sub">${puntos.length >= 5 ? 'Confiabilidad Alta' : 'Confiabilidad Media'}</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Error Estimado</div>
+        <div class="kpi-value">${errorRelativo}%</div>
+        <div class="kpi-sub">vs punto más cercano</div>
+      </div>
+    </div>
   `;
-  setResult('resultC', html);
+  
+  // Agregar advertencia si es extrapolación
+  if (!inRange) {
+    htmlResultados += alert_('warn', '⚠ El día solicitado está fuera del rango de datos (extrapolación). Los resultados pueden ser poco precisos.');
+  }
+  
+  setResult('resultC', htmlResultados);
 
+  // --- NUEVO: Generar interpretación dinámica ---
+  const interpretacionHtml = generarInterpretacionC(metodNombre, valorEstimado, puntos, xMin, xMax, errorRelativo);
+  const interpretacionDiv = document.getElementById('interpretacionTexto');
+  if (interpretacionDiv) {
+    interpretacionDiv.innerHTML = interpretacionHtml;
+  }
+
+  // Crear el gráfico
   makeChart('chartC', {
     type: 'line',
     data: {
@@ -651,6 +686,7 @@ function evalSpline(xs, ys, M, x) {
 // ══  ESCENARIO D — INTEGRACIÓN NUMÉRICA  ═══════════════
 // ═══════════════════════════════════════════════════════
 
+
 function runEscenarioD() {
   const p0      = +document.getElementById('d_p0').value;
   const pf      = +document.getElementById('d_pf').value;
@@ -663,7 +699,6 @@ function runEscenarioD() {
   const precio = t => {
     if (tipo === 'lineal') return p0 + (pf - p0) * t / dias;
     if (tipo === 'exponencial') return p0 * Math.exp(Math.log(pf/p0) * t / dias);
-    // escalon: 3 shocks
     if (t < dias*0.33) return p0;
     if (t < dias*0.66) return p0 + (pf-p0)*0.5;
     return pf;
@@ -693,6 +728,7 @@ function runEscenarioD() {
   const porcPerdida = (perdida / ingreso * 100).toFixed(1);
   const gastoPorcentaje = (gastReal / ingreso * 100).toFixed(1);
   const metodNombre = {trapecio:'Trapecio',simpson13:'Simpson 1/3',simpson38:'Simpson 3/8'}[met];
+  const deficit = ingreso - gastReal;
 
   // Compare all methods
   const gT = trapecio(ps, 1);
@@ -701,26 +737,60 @@ function runEscenarioD() {
   const nS38 = Math.floor((ps.length-1)/3)*3;
   const gS38 = simpson38(ps.slice(0, nS38+1), 1);
 
-  let html = `
+  // --- NUEVO: HTML con KPI cards ---
+  let htmlResultados = `
     <div class="result-title">Método usado: ${metodNombre}</div>
-    ${statRow('Gasto real del mes', 'Bs ' + fmt(gastReal, 2), gastReal > ingreso ? 'danger' : '')}
-    ${statRow('Gasto si no subieran precios', 'Bs ' + fmt(gastSin, 2))}
-    ${statRow('Pérdida poder adquisitivo', 'Bs ' + fmt(perdida, 2), 'danger')}
-    ${statRow('Gasto / Ingreso', gastoPorcentaje + '%', +gastoPorcentaje > 100 ? 'danger' : +gastoPorcentaje > 80 ? '' : 'safe')}
-    ${gastReal > ingreso ? alert_('danger', `⚠ El gasto (Bs ${fmt(gastReal,2)}) SUPERA el ingreso (Bs ${ingreso}). Déficit familiar: Bs ${fmt(gastReal-ingreso,2)}`) : alert_('success', `✔ El ingreso alcanza, pero el ${porcPerdida}% del ingreso adicional se perdió por inflación`)}
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-label">Gasto Real del Mes</div>
+        <div class="kpi-value ${gastReal > ingreso ? 'danger' : ''}">Bs. ${fmt(gastReal, 2)}</div>
+        <div class="kpi-sub">${gastoPorcentaje}% del ingreso</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Sin aumento de precios</div>
+        <div class="kpi-value">Bs. ${fmt(gastSin, 2)}</div>
+        <div class="kpi-sub">Ahorro potencial</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Pérdida del Poder Adquisitivo</div>
+        <div class="kpi-value danger">Bs. ${fmt(perdida, 2)}</div>
+        <div class="kpi-sub">${porcPerdida}% del ingreso</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Balance Final</div>
+        <div class="kpi-value ${deficit < 0 ? 'danger' : 'safe'}">${deficit >= 0 ? 'Bs. ' + fmt(deficit, 2) : 'Déficit Bs. ' + fmt(Math.abs(deficit), 2)}</div>
+        <div class="kpi-sub">${deficit >= 0 ? 'Superávit' : 'Endeudamiento'}</div>
+      </div>
+    </div>
     <div class="result-title" style="margin-top:12px">Comparación entre métodos:</div>
-    ${statRow('Trapecio', 'Bs ' + fmt(gT, 2))}
-    ${statRow('Simpson 1/3', 'Bs ' + fmt(gS13, 2))}
-    ${statRow('Simpson 3/8', 'Bs ' + fmt(gS38, 2))}
-    ${statRow('Método más preciso', 'Simpson 1/3 (O(h⁴)) para curvas suaves', 'safe')}
+    <div class="kpi-grid">
+      <div class="kpi-card"><div class="kpi-label">Trapecio</div><div class="kpi-value">Bs. ${fmt(gT, 2)}</div></div>
+      <div class="kpi-card"><div class="kpi-label">Simpson 1/3</div><div class="kpi-value">Bs. ${fmt(gS13, 2)}</div></div>
+      <div class="kpi-card"><div class="kpi-label">Simpson 3/8</div><div class="kpi-value">Bs. ${fmt(gS38, 2)}</div></div>
+      <div class="kpi-card"><div class="kpi-label">Más preciso</div><div class="kpi-value safe">Simpson 1/3 (O(h⁴))</div></div>
+    </div>
   `;
-  setResult('resultD', html);
+  
+  if (gastReal > ingreso) {
+    htmlResultados += alert_('danger', `⚠ El gasto (Bs ${fmt(gastReal,2)}) SUPERA el ingreso (Bs ${ingreso}). Déficit familiar: Bs ${fmt(gastReal-ingreso,2)}`);
+  } else {
+    htmlResultados += alert_('success', `✔ El ingreso alcanza, pero el ${porcPerdida}% del ingreso adicional se perdió por inflación`);
+  }
+  
+  setResult('resultD', htmlResultados);
+
+  // --- NUEVO: Interpretación dinámica ---
+  const interpretacionHtml = generarInterpretacionD(gastReal, gastSin, ingreso, perdida, porcPerdida, metodNombre);
+  const interpretacionDiv = document.getElementById('interpretacionTextoD');
+  if (interpretacionDiv) {
+    interpretacionDiv.innerHTML = interpretacionHtml;
+  }
 
   // Cumulative cost chart
   const acumulado = [];
   let acum = 0;
   ps.forEach((p, i) => {
-    if (i > 0) acum += (ps[i-1] + p) / 2; // trapecio incremental
+    if (i > 0) acum += (ps[i-1] + p) / 2;
     acumulado.push(acum);
   });
   const acumSin = ts.map(t => t * p0);
@@ -812,17 +882,20 @@ function runEscenarioE() {
     fLabel = 'f(x)=0.5x²−1.2x−3';
   }
 
-  let raiz, iteraciones, convergio;
+  let raiz, iteraciones, convergio, tablaIteraciones;
   try {
     if (met === 'biseccion') {
       const r = biseccion(f, a, b, tol);
       raiz = r.raiz; iteraciones = r.iters; convergio = r.convergio;
+      tablaIteraciones = biseccion(f, a, b, tol, true).tabla;
     } else if (met === 'newton') {
       const r = newtonRaphson(f, df, (a+b)/2, tol);
       raiz = r.raiz; iteraciones = r.iters; convergio = r.convergio;
+      tablaIteraciones = newtonRaphson(f, df, (a+b)/2, tol, true).tabla;
     } else {
       const r = secante(f, a, b, tol);
       raiz = r.raiz; iteraciones = r.iters; convergio = r.convergio;
+      tablaIteraciones = secante(f, a, b, tol, true).tabla;
     }
   } catch(e) {
     setResult('resultE', alert_('danger', 'Error: ' + e.message));
@@ -832,49 +905,59 @@ function runEscenarioE() {
   const fRaiz = f(raiz);
   const metodNombre = {biseccion:'Bisección',newton:'Newton-Raphson',secante:'Secante'}[met];
 
-  let interpretacion = '';
-  if (fTipo === 'precio_limite') {
-    interpretacion = `La canasta agota el ingreso cuando el precio sube un ${fmt(raiz*100,2)}%. Con precio base Bs ${pbase}/día, el límite es Bs ${fmt(pbase*(1+raiz),2)}/día.`;
-  } else if (fTipo === 'reposicion') {
-    interpretacion = `El consumo iguala la entrada cuando la demanda aumenta en x=${fmt(raiz,4)}. Más allá de este punto, las reservas se vacían.`;
-  } else {
-    interpretacion = `El malestar social alcanza el umbral crítico de conflicto en x=${fmt(raiz,4)}.`;
-  }
-
-  // Build iteration table
+  // Construir tabla de iteraciones
   let tableRows = '';
-  const itersData = met === 'biseccion' ? biseccion(f, a, b, tol, true).tabla :
-                    met === 'newton' ? newtonRaphson(f, df, (a+b)/2, tol, true).tabla :
-                    secante(f, a, b, tol, true).tabla;
-
-  const maxRows = Math.min(itersData.length, 15);
+  const maxRows = Math.min(tablaIteraciones.length, 15);
   for (let i = 0; i < maxRows; i++) {
-    const it = itersData[i];
+    const it = tablaIteraciones[i];
     tableRows += `<tr><td>${i+1}</td><td>${fmt(it.x,6)}</td><td>${fmt(it.fx,8)}</td><td>${fmt(it.err,8)}</td></tr>`;
   }
 
-  let html = `
-    <div class="result-title">Método: ${metodNombre}</div>
-    ${convergio ? alert_('success', '✔ Convergió') : alert_('warn', '⚠ No convergió completamente')}
-    ${statRow('Raíz encontrada', fmt(raiz, 6))}
-    ${statRow('f(raíz)', fmt(fRaiz, 8))}
-    ${statRow('Iteraciones', iteraciones)}
-    ${statRow('Tolerancia', tol)}
-    <div style="margin:10px 0;font-size:12px;color:var(--text2)">${interpretacion}</div>
-    <div class="table-scroll">
-      <table class="data-table">
-        <thead><tr><th>Iter</th><th>x</th><th>f(x)</th><th>Error</th></tr></thead>
-        <tbody>${tableRows}</tbody>
-      </table>
+  // --- NUEVO: HTML con KPI cards ---
+  let htmlResultados = `
+    <div class="result-title">Método: ${metodNombre} ${convergio ? '✅ Convergió' : '⚠️ No convergió'}</div>
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-label">Raíz encontrada (x)</div>
+        <div class="kpi-value">${fmt(raiz, 6)}</div>
+        <div class="kpi-sub">f(x) = ${fmt(fRaiz, 8)}</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Iteraciones</div>
+        <div class="kpi-value">${iteraciones}</div>
+        <div class="kpi-sub">Tolerancia: ${tol}</div>
+      </div>
     </div>
   `;
-  setResult('resultE', html);
+
+  // Agregar tabla de iteraciones si existe
+  if (tableRows) {
+    htmlResultados += `
+      <div class="tabla-iteraciones-e">
+        <h4>📈 Tabla de iteraciones</h4>
+        <div class="tabla-scroll">
+          <table class="tabla-iteracion-e">
+            <thead><tr><th>Iter</th><th>x</th><th>f(x)</th><th>Error</th></tr></thead>
+            <tbody>${tableRows}</tbody>
+          </table>
+        </div>
+      </div>
+    `;
+  }
+
+  setResult('resultE', htmlResultados);
+
+  // --- NUEVO: Interpretación dinámica ---
+  const interpretacionHtml = generarInterpretacionE(fTipo, raiz, metodNombre, iteraciones, fRaiz);
+  const interpretacionDiv = document.getElementById('interpretacionTextoE');
+  if (interpretacionDiv) {
+    interpretacionDiv.innerHTML = interpretacionHtml;
+  }
 
   // Plot function and root
   const xPlot = Array.from({length: 200}, (_, i) => a + i*(b-a)/199);
   const yPlot = xPlot.map(x => f(x));
   const yZero = xPlot.map(() => 0);
-  const rootY = [{ x: raiz, y: 0 }];
 
   makeChart('chartE', {
     type: 'line',
@@ -889,14 +972,20 @@ function runEscenarioE() {
     options: chartOpts('Función y Raíz Encontrada', false, 'x', 'f(x)')
   });
 
-  // Convergence chart
-  const errores = itersData.map(it => Math.abs(it.err));
+  let interpretacionRaiz = '';
+  if (fTipo === 'precio_limite') {
+    interpretacionRaiz = `La canasta agota el ingreso cuando el precio sube un ${fmt(raiz*100,2)}%.`;
+  } else if (fTipo === 'reposicion') {
+    interpretacionRaiz = `El consumo iguala la entrada cuando la demanda aumenta en x=${fmt(raiz,4)}.`;
+  } else {
+    interpretacionRaiz = `El malestar social alcanza el umbral crítico de conflicto en x=${fmt(raiz,4)}.`;
+  }
 
   setQuestions('questionsE', [
     { q: '¿Cuál es el umbral/punto crítico encontrado?', a: `x = ${fmt(raiz, 6)} con f(x) = ${fmt(fRaiz, 8)}` },
     { q: '¿Cuántas iteraciones necesitó cada método?', a: `${metodNombre}: ${iteraciones} iteraciones hasta tolerancia ${tol}` },
     { q: '¿Cuál método converge más rápido?', a: 'Newton-Raphson: convergencia cuadrática. Secante: superlineal (~1.618). Bisección: lineal (más lento pero siempre converge).' },
-    { q: '¿Qué significa la raíz en el contexto real?', a: interpretacion },
+    { q: '¿Qué significa la raíz en el contexto real?', a: interpretacionRaiz },
     { q: '¿Es sensible a la condición inicial?', a: met === 'newton' ? 'Newton-Raphson SÍ es sensible. Si x₀ está lejos de la raíz o f\'(x₀)≈0, puede divergir.' : met === 'biseccion' ? 'Bisección NO es sensible si f(a)·f(b)<0. Siempre converge.' : 'Secante requiere dos puntos iniciales cercanos a la raíz. Sensibilidad media.' }
   ]);
 }
@@ -947,6 +1036,115 @@ function secante(f, x0, x1, tol, returnTabla=false) {
   }
   return returnTabla ? { raiz: xc, iters, convergio, tabla } : { raiz: xc, iters, convergio };
 }
+
+
+
+
+// ============================================
+// FUNCIONES PARA LAS GUÍAS (C, D, E)
+// ============================================
+function toggleGuiaC() {
+  const guia = document.querySelector('#escenarioC .guia-usuario');
+  const btn = document.querySelector('#escenarioC .guia-toggle');
+  if (guia) {
+    guia.classList.toggle('collapsed');
+    btn.textContent = guia.classList.contains('collapsed') ? '+' : '−';
+  }
+}
+
+function toggleGuiaD() {
+  const guia = document.querySelector('#escenarioD .guia-usuario');
+  const btn = document.querySelector('#escenarioD .guia-toggle');
+  if (guia) {
+    guia.classList.toggle('collapsed');
+    btn.textContent = guia.classList.contains('collapsed') ? '+' : '−';
+  }
+}
+
+function toggleGuiaE() {
+  const guia = document.querySelector('#escenarioE .guia-usuario');
+  const btn = document.querySelector('#escenarioE .guia-toggle');
+  if (guia) {
+    guia.classList.toggle('collapsed');
+    btn.textContent = guia.classList.contains('collapsed') ? '+' : '−';
+  }
+}
+
+// ============================================
+// FUNCIONES PARA INTERPRETACIONES (C, D, E)
+// ============================================
+// --- Interpretación para Escenario C ---
+function generarInterpretacionC(metodoNombre, valorEstimado, puntos, xMin, xMax, errorRelativo) {
+    let metodoExplicacion = '';
+    if (metodoNombre === 'Lagrange') metodoExplicacion = 'El polinomio de Lagrange pasa EXACTAMENTE por todos los puntos dados, pero puede oscilar violentamente entre ellos si hay muchos datos (Fenómeno de Runge).';
+    else if (metodoNombre === 'Newton (Diferencias Divididas)') metodoExplicacion = 'El método de Newton es equivalente al de Lagrange, pero es más eficiente para añadir nuevos puntos. Su comportamiento es el mismo: puede oscilar con muchos datos.';
+    else metodoExplicacion = 'Los Splines Cúbicos conectan cada par de puntos con un polinomio cúbico diferente, garantizando una curva suave y sin oscilaciones. Son ideales para modelar precios de mercado.';
+
+    const precioEstimadoFormateado = valorEstimado.toFixed(2);
+    const incrementoTotal = ((puntos[puntos.length-1].precio - puntos[0].precio) / puntos[0].precio * 100).toFixed(1);
+    
+    let calidadDatos = puntos.length < 4 ? '⚠️ Pocos puntos de datos. La interpolación puede ser poco fiable.' : '✅ Suficientes puntos para una interpolación confiable.';
+
+    return `
+        <p><strong>🎯 Resumen de la interpolación:</strong> Usando el método <strong>${metodoNombre}</strong>, se estimó que el precio de la canasta básica en el día <strong>${document.getElementById('c_dia_estimar').value}</strong> es de <strong>Bs. ${precioEstimadoFormateado}</strong>.</p>
+        <p><strong>📈 Comportamiento de la curva:</strong> Los precios han tenido un incremento total del <strong>${incrementoTotal}%</strong> en el período. La curva generada por el método ${metodoNombre} ${metodoExplicacion}</p>
+        <p><strong>📊 Confiabilidad de los resultados:</strong> ${calidadDatos} El error relativo estimado es bajo (${errorRelativo}%), indicando que la interpolación es consistente con los datos proporcionados.</p>
+        <p><strong>💡 Conclusión:</strong> La variación de precios ${incrementoTotal > 30 ? 'es muy acelerada' : (incrementoTotal > 15 ? 'es moderada' : 'es controlada')}, lo que impacta directamente en el presupuesto familiar. Para un análisis más detallado, se recomienda el uso de Splines Cúbicos por su suavidad y precisión.</p>
+    `;
+}
+
+// --- Interpretación para Escenario D ---
+function generarInterpretacionD(gastReal, gastSin, ingreso, perdida, porcPerdida, metodNombre) {
+    const capacidadAhorro = ingreso - gastReal;
+    let mensajeCapacidad = '';
+    if (capacidadAhorro > 0) mensajeCapacidad = `La familia aún tiene un margen de Bs. ${capacidadAhorro.toFixed(2)} para ahorro u otros gastos.`;
+    else if (capacidadAhorro < 0) mensajeCapacidad = `⚠️ <strong>ALERTA CRÍTICA:</strong> El gasto supera el ingreso en Bs. ${Math.abs(capacidadAhorro).toFixed(2)}. La familia está generando deuda o consumiendo sus ahorros.`;
+    else mensajeCapacidad = `El gasto iguala exactamente al ingreso. No hay margen para imprevistos.`;
+
+    let calidadMetodo = '';
+    if (metodNombre === 'Trapecio') calidadMetodo = 'La regla del Trapecio es la menos precisa, pero es útil para funciones con cambios bruscos.';
+    else if (metodNombre === 'Simpson 1/3') calidadMetodo = 'La regla de Simpson 1/3 es altamente precisa (orden O(h⁴)) para funciones suaves como la evolución de precios. Es la recomendada.';
+    else calidadMetodo = 'La regla de Simpson 3/8 es similar en precisión a Simpson 1/3, ideal cuando el número de intervalos es múltiplo de 3.';
+
+    return `
+        <p><strong>📉 Pérdida del poder adquisitivo:</strong> Debido a la inflación, la familia ha gastado <strong>Bs. ${perdida.toFixed(2)} más</strong> de lo que habría gastado si los precios se hubieran mantenido estables. Esto representa una pérdida del <strong>${porcPerdida}%</strong> de su ingreso mensual.</p>
+        <p><strong>💰 Balance final:</strong> El gasto real total fue de <strong>Bs. ${gastReal.toFixed(2)}</strong> frente a un ingreso de <strong>Bs. ${ingreso}</strong>. ${mensajeCapacidad}</p>
+        <p><strong>🧮 Precisión del método ${metodNombre}:</strong> ${calidadMetodo}</p>
+        <p><strong>💡 Recomendación:</strong> Para mitigar el impacto, se sugiere buscar alternativas de consumo (productos sustitutos) o solicitar la intervención estatal para controlar los precios de la canasta básica.</p>
+    `;
+}
+
+// --- Interpretación para Escenario E ---
+function generarInterpretacionE(fTipo, raiz, metodoNombre, iteraciones, fRaiz) {
+    let interpretacionUmbral = '';
+    let valorUmbral = '';
+    let recomendacion = '';
+
+    if (fTipo === 'precio_limite') {
+        const incrementoPorcentaje = (raiz * 100).toFixed(2);
+        valorUmbral = `${incrementoPorcentaje}% de incremento`;
+        interpretacionUmbral = `El precio de la canasta puede aumentar hasta un <strong>${incrementoPorcentaje}%</strong> antes de que el gasto mensual iguale al ingreso familiar.`;
+        recomendacion = `Si el incremento supera este umbral, la familia necesitará asistencia o crédito para cubrir sus necesidades básicas. Es un indicador clave para definir bonos o subsidios.`;
+    } else if (fTipo === 'reposicion') {
+        valorUmbral = raiz.toFixed(4);
+        interpretacionUmbral = `La tasa crítica de reposición es de <strong>${valorUmbral}</strong>.`;
+        recomendacion = `Por debajo de este valor, las reservas de combustible se agotan. Por encima, se estabilizan. Es vital para la planificación logística.`;
+    } else {
+        valorUmbral = raiz.toFixed(4);
+        interpretacionUmbral = `El nivel de malestar social alcanza el umbral de conflicto en <strong>x = ${valorUmbral}</strong>.`;
+        recomendacion = `Se deben implementar medidas de diálogo antes de que el descontento supere este punto para evitar una escalada de protestas.`;
+    }
+
+    return `
+        <p><strong>🎯 Umbral crítico encontrado:</strong> La raíz de la ecuación es <strong>x = ${raiz.toFixed(6)}</strong>, con un valor de f(x) = ${fRaiz.toExponential(2)}.</p>
+        <p><strong>🔬 Interpretación del umbral:</strong> ${interpretacionUmbral}</p>
+        <p><strong>⚙️ Análisis del método (${metodoNombre}):</strong> El método convergió en <strong>${iteraciones} iteraciones</strong> con una tolerancia de ${document.getElementById('e_tol').value}. ${metodoNombre === 'Bisección' ? 'Este método es lento pero 100% seguro si se dan las condiciones iniciales correctas.' : (metodoNombre === 'Newton-Raphson' ? 'Este método es muy rápido (convergencia cuadrática) pero sensible a la estimación inicial.' : 'El método de la Secante es una alternativa eficiente cuando calcular la derivada es complicado.')}</p>
+        <p><strong>💡 Recomendación estratégica:</strong> ${recomendacion}</p>
+    `;
+}
+
+
+
 
 // ═══════════════════════════════════════════════════════
 // ══  ESCENARIO F — RUMORES Y SISTEMAS MAL CONDICIONADOS
