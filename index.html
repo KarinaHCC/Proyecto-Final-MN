@@ -632,175 +632,313 @@
    <!-- ============================================ FIN ESCENARIO B =============================================== -->
 
 
-  <!-- ═══ ESCENARIO C ═══ -->
+
+  <!-- ═══************************** ESCENARIO C **************************═══ -->
   <section class="page-section" id="escenarioC">
     <div class="section-header">
-      <div class="section-badge">Escenario C</div>
+      <div class="section-badge">Escenario C - Univ. Antony Isaac Lopez Salas</div>
       <h2>Curva Continua de Precios de Alimentos</h2>
-      <p>Interpolación de datos dispersos de precios para reconstruir la curva completa de variación mensual.</p>
+      <p>Reconstrucción de la curva de precios a partir de datos diarios dispersos. Se utilizan métodos de interpolación numérica para estimar valores en días sin registro.</p>
     </div>
-    <div class="content-grid">
-      <div class="panel">
-        <h3 class="panel-title">⚙ Datos de Precios</h3>
-        <div class="algo-selector">
-          <label>Método:</label>
-          <select id="metodC">
-            <option value="lagrange">Lagrange</option>
-            <option value="newton">Newton (Diferencias divididas)</option>
-            <option value="spline">Splines Cúbicos</option>
-          </select>
+
+    <div class="escenario-profesional">
+      <!-- Contexto real -->
+      <div class="contexto-real_cde">
+        <div class="contexto-icon">📈</div>
+        <div class="contexto-text">
+          <strong>📍 Contexto ciudad de La Paz:</strong> Durante la crisis, los precios de la canasta básica (arroz, pan, aceite) no se registran diariamente. Este simulador utiliza <strong>interpolación numérica</strong> (Lagrange, Newton, Splines Cúbicos) para crear una curva continua de precios, permitiendo estimar el costo en cualquier día del mes.
         </div>
-        <p class="hint">Edita la tabla de precios (Día → Precio en Bs):</p>
-        <div id="tablaPreciosC">
-          <div class="data-row-header"><span>Día</span><span>Precio (Bs)</span><span></span></div>
-        </div>
-        <button class="btn-secondary" onclick="agregarFilaC()">+ Agregar punto</button>
-        <hr class="divider"/>
-        <div class="form-group">
-          <label>Día a estimar (interpolación):</label>
-          <input type="number" id="c_dia_estimar" value="7" min="1" max="31"/>
-        </div>
-        <button class="btn-run" onclick="runEscenarioC()">▶ Interpolar</button>
       </div>
-      <div class="panel results-panel">
-        <h3 class="panel-title">📊 Curva de Precios</h3>
-        <div id="resultC" class="result-box">
-          <p class="placeholder-text">Ejecuta la simulación para ver resultados.</p>
+
+      <!-- GUÍA PASO A PASO -->
+      <div class="guia-usuario">
+        <div class="guia-header_cde">
+          <span class="guia-icon">📋</span>
+          <span class="guia-titulo">¿Cómo usar este simulador de interpolación?</span>
+          <button class="guia-toggle" onclick="toggleGuiaC()">−</button>
         </div>
-        <canvas id="chartC" class="chart-canvas"></canvas>
+        <div class="guia-contenido" id="guiaContenidoC">
+          <div class="pasos-grid">
+            <div class="paso-card">
+              <div class="paso-numero">1</div>
+              <div class="paso-contenido">
+                <h4>Edita los puntos de precio conocidos</h4>
+                <p>Modifica la tabla de "Día" y "Precio (Bs)". Puedes agregar o eliminar puntos para simular más o menos datos.</p>
+                <div class="paso-ejemplo">📌 Ejemplo: Agrega un punto en el día 25 con precio Bs 120 para ver cómo se ajusta la curva.</div>
+              </div>
+            </div>
+            <div class="paso-card">
+              <div class="paso-numero">2</div>
+              <div class="paso-contenido">
+                <h4>Selecciona un método de interpolación</h4>
+                <p>Elige entre Lagrange, Newton o Splines Cúbicos. Cada uno tiene un comportamiento diferente entre los puntos.</p>
+                <div class="paso-ejemplo">📌 Ejemplo: Splines producen la curva más suave, mientras que Lagrange puede oscilar.</div>
+              </div>
+            </div>
+            <div class="paso-card">
+              <div class="paso-numero">3</div>
+              <div class="paso-contenido">
+                <h4>Ingresa el día a estimar</h4>
+                <p>Escribe un número de día (entre 1 y 31) para obtener el precio interpolado.</p>
+                <div class="paso-ejemplo">📌 Ejemplo: Prueba con el día 12 para ver cuánto costaría la canasta ese día.</div>
+              </div>
+            </div>
+            <div class="paso-card">
+              <div class="paso-numero">4</div>
+              <div class="paso-contenido">
+                <h4>Ejecuta y observa los resultados</h4>
+                <p>Haz clic en "Interpolar" y analiza la curva en el gráfico y las respuestas a las preguntas.</p>
+                <div class="paso-ejemplo">📌 Ejemplo: El gráfico mostrará la curva suave y los puntos reales.</div>
+              </div>
+            </div>
+          </div>
+          <div class="guia-consejo" style="font-size: 0.75rem;color: #854d0e;line-height: 1.4;">
+            💡 <strong>Consejo:</strong> Los Splines Cúbicos evitan el fenómeno de Runge, una gran oscilación en los extremos cuando hay muchos puntos. Son ideales para precios de alimentos.
+          </div>
+        </div>
       </div>
-    </div>
-    <div class="questions-panel">
-      <h3>❓ Preguntas del Escenario C</h3>
-      <div id="questionsC" class="questions-grid"></div>
+
+      <div class="content-grid">
+        <div class="panel">
+          <h3 class="panel-title">⚙ Datos de Precios y Método</h3>
+          <div class="algo-selector">
+            <label>Método de Interpolación:</label>
+            <select id="metodC">
+              <option value="lagrange">Lagrange</option>
+              <option value="newton">Newton (Diferencias divididas)</option>
+              <option value="spline">Splines Cúbicos</option>
+            </select>
+          </div>
+          <p class="hint">✏️ Edita la tabla de precios conocidos (Día → Precio en Bs):</p>
+          <div id="tablaPreciosC"></div>
+          <button class="btn-secondary" onclick="agregarFilaC()">+ Agregar punto</button>
+          <hr class="divider"/>
+          <div class="param-group">
+            <label for="c_dia_estimar">Día a estimar (interpolación):</label>
+            <input type="number" id="c_dia_estimar" value="7" min="1" max="31"/>
+          </div>
+          <button class="btn-run" onclick="runEscenarioC()">▶ Interpolar y Graficar</button>
+        </div>
+
+        <div class="panel results-panel">
+          <div class="resultados-principales" id="resultC">
+            <p class="placeholder-text">Ejecuta la simulación para ver los resultados.</p>
+          </div>
+          <div class="grafico-card">
+            <canvas id="chartC" class="chart-canvas"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- PREGUNTAS DEL ESCENARIO C -->
+      <div class="preguntas-container">
+        <h3>❓ Preguntas Clave del Escenario C</h3>
+        <div id="questionsC" class="preguntas-grid"></div>
+      </div>
+
+      <!-- INTERPRETACIÓN DE RESULTADOS -->
+      <div class="interpretacion-container" id="interpretacionCContainer">
+        <h4><span class="icono">📖</span> Interpretación de la Interpolación</h4>
+        <div class="interpretacion-texto" id="interpretacionTexto">
+          <p>Ejecuta la simulación para ver un análisis detallado de la curva de precios.</p>
+        </div>
+      </div>
     </div>
   </section>
 
-  <!-- ═══ ESCENARIO D ═══ -->
+  <!-- ═══************************** ESCENARIO D **************************═══ -->
   <section class="page-section" id="escenarioD">
     <div class="section-header">
-      <div class="section-badge">Escenario D</div>
+      <div class="section-badge">Escenario D - Univ. Antony Isaac Lopez Salas</div>
       <h2>Costo Acumulado y Pérdida del Poder Adquisitivo</h2>
-      <p>Integración numérica del gasto familiar durante un mes de crisis de precios.</p>
+      <p>Cálculo del gasto total mensual de una familia mediante integración numérica (Trapecio, Simpson 1/3, Simpson 3/8) a partir de la curva de precios de alimentos.</p>
     </div>
-    <div class="content-grid">
-      <div class="panel">
-        <h3 class="panel-title">⚙ Configuración Familiar</h3>
-        <div class="algo-selector">
-          <label>Método:</label>
-          <select id="metodD">
-            <option value="trapecio">Regla del Trapecio</option>
-            <option value="simpson13">Simpson 1/3</option>
-            <option value="simpson38">Simpson 3/8</option>
-          </select>
+
+    <div class="escenario-profesional">
+      <div class="contexto-real_cde">
+        <div class="contexto-icon">🏠</div>
+        <div class="contexto-text">
+          <strong>📍 Contexto ciudad de La Paz:</strong> Con la inflación, el gasto familiar diario por la canasta básica no es constante. Este simulador <strong>integra numéricamente</strong> la función de precio diario para calcular el gasto acumulado del mes y cuantificar la pérdida del poder adquisitivo familiar.
         </div>
-        <div class="form-group">
-          <label>Precio inicial canasta (Bs/día):</label>
-          <input type="number" id="d_p0" value="80" min="1"/>
-        </div>
-        <div class="form-group">
-          <label>Precio final canasta (Bs/día):</label>
-          <input type="number" id="d_pf" value="130" min="1"/>
-        </div>
-        <div class="form-group">
-          <label>Ingreso mensual familiar (Bs):</label>
-          <input type="number" id="d_ingreso" value="2500" min="100"/>
-        </div>
-        <div class="form-group">
-          <label>Días del mes:</label>
-          <input type="number" id="d_dias" value="30" min="28" max="31"/>
-        </div>
-        <div class="form-group">
-          <label>Tipo de incremento:</label>
-          <select id="d_tipo">
-            <option value="lineal">Lineal</option>
-            <option value="exponencial">Exponencial</option>
-            <option value="escalon">Escalón (shocks)</option>
-          </select>
-        </div>
-        <button class="btn-run" onclick="runEscenarioD()">▶ Calcular Gasto</button>
       </div>
-      <div class="panel results-panel">
-        <h3 class="panel-title">📊 Análisis de Gasto</h3>
-        <div id="resultD" class="result-box">
-          <p class="placeholder-text">Ejecuta la simulación para ver resultados.</p>
+
+      <div class="guia-usuario">
+        <div class="guia-header_cde">
+          <span class="guia-icon">📋</span>
+          <span class="guia-titulo">¿Cómo simular el gasto familiar?</span>
+          <button class="guia-toggle" onclick="toggleGuiaD()">−</button>
         </div>
-        <canvas id="chartD" class="chart-canvas"></canvas>
+        <div class="guia-contenido" id="guiaContenidoD">
+          <div class="pasos-grid">
+            <div class="paso-card"><div class="paso-numero">1</div><div class="paso-contenido"><h4>Define los precios</h4><p>Ingresa el precio inicial y final de la canasta básica en el mes.</p><div class="paso-ejemplo">📌 Ejemplo: Inicial Bs 80, Final Bs 130.</div></div></div>
+            <div class="paso-card"><div class="paso-numero">2</div><div class="paso-contenido"><h4>Configura la familia</h4><p>Establece el ingreso mensual familiar y el tipo de incremento de precios (lineal, exponencial o escalonado).</p><div class="paso-ejemplo">📌 Ejemplo: Escogiendo "Escalón" simularás un shock de precios.</div></div></div>
+            <div class="paso-card"><div class="paso-numero">3</div><div class="paso-contenido"><h4>Selecciona el método de integración</h4><p>Compara la precisión de las reglas del Trapecio, Simpson 1/3 y Simpson 3/8.</p><div class="paso-ejemplo">📌 Ejemplo: Simpson 1/3 es más preciso para curvas suaves.</div></div></div>
+            <div class="paso-card"><div class="paso-numero">4</div><div class="paso-contenido"><h4>Ejecuta y analiza</h4><p>Calcula el gasto real vs. el que habría sido sin inflación, y mira el gráfico acumulado.</p><div class="paso-ejemplo">📌 Ejemplo: ¿Cuánto poder adquisitivo perdiste?</div></div></div>
+          </div>
+          <div class="guia-consejo" style="font-size: 0.75rem;color: #854d0e;line-height: 1.4;">💡 <strong>Consejo:</strong> El método de Simpson 1/3 es ideal para funciones suaves, mientras que el Trapecio es más robusto para funciones con ruido o cambios bruscos.</div>
+        </div>
       </div>
-    </div>
-    <div class="questions-panel">
-      <h3>❓ Preguntas del Escenario D</h3>
-      <div id="questionsD" class="questions-grid"></div>
+
+      <div class="content-grid">
+        <div class="panel">
+          <h3 class="panel-title">⚙ Configuración Económica</h3>
+          <div class="algo-selector">
+            <label>Método de Integración:</label>
+            <select id="metodD">
+              <option value="trapecio">Regla del Trapecio</option>
+              <option value="simpson13">Simpson 1/3</option>
+              <option value="simpson38">Simpson 3/8</option>
+            </select>
+          </div>
+          <div class="param-group">
+            <label for="d_p0">Precio inicial canasta (Bs/día):</label>
+            <input type="number" id="d_p0" value="80" min="1"/>
+          </div>
+          <div class="param-group">
+            <label for="d_pf">Precio final canasta (Bs/día):</label>
+            <input type="number" id="d_pf" value="130" min="1"/>
+          </div>
+          <div class="param-group">
+            <label for="d_ingreso">Ingreso mensual familiar (Bs):</label>
+            <input type="number" id="d_ingreso" value="2500" min="100"/>
+          </div>
+          <div class="param-group">
+            <label for="d_dias">Días del mes:</label>
+            <input type="number" id="d_dias" value="30" min="28" max="31"/>
+          </div>
+          <div class="param-group">
+            <label for="d_tipo">Tipo de incremento:</label>
+            <select id="d_tipo">
+              <option value="lineal">Lineal</option>
+              <option value="exponencial">Exponencial</option>
+              <option value="escalon">Escalón (shocks)</option>
+            </select>
+          </div>
+          <button class="btn-run" onclick="runEscenarioD()">▶ Calcular Gasto</button>
+        </div>
+
+        <div class="panel results-panel">
+          <div class="resultados-principales" id="resultD"></div>
+          <div class="grafico-card">
+            <canvas id="chartD" class="chart-canvas"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <div class="preguntas-container">
+        <h3>❓ Preguntas Clave del Escenario D</h3>
+        <div id="questionsD" class="preguntas-grid"></div>
+      </div>
+
+      <div class="interpretacion-container" id="interpretacionDContainer">
+        <h4><span class="icono">📖</span> Interpretación del Gasto Familiar</h4>
+        <div class="interpretacion-texto" id="interpretacionTextoD"></div>
+      </div>
     </div>
   </section>
 
-  <!-- ═══ ESCENARIO E ═══ -->
+  <!-- ═══************************** ESCENARIO E **************************═══ -->
   <section class="page-section" id="escenarioE">
     <div class="section-header">
-      <div class="section-badge">Escenario E</div>
+      <div class="section-badge">Escenario E - Univ. Antony Isaac Lopez Salas</div>
       <h2>Umbrales Críticos de Abastecimiento</h2>
-      <p>Raíces de ecuaciones no lineales para encontrar puntos críticos: precio límite, tasa de reposición crítica y umbral de conflicto.</p>
+      <p>Encuentro de raíces de ecuaciones no lineales para determinar puntos críticos: precio límite que agota el ingreso, tasa crítica de reposición y umbral de conflicto social.</p>
     </div>
-    <div class="content-grid">
-      <div class="panel">
-        <h3 class="panel-title">⚙ Configuración</h3>
-        <div class="algo-selector">
-          <label>Función:</label>
-          <select id="e_funcion" onchange="updateFuncionE()">
-            <option value="precio_limite">f(x) = Gasto acumulado - Ingreso familiar</option>
-            <option value="reposicion">f(x) = Consumo - Tasa de reposición</option>
-            <option value="conflicto">f(x) = Descontento social umbral</option>
-          </select>
+
+    <div class="escenario-profesional">
+      <div class="contexto-real_cde">
+        <div class="contexto-icon">🎯</div>
+        <div class="contexto-text">
+          <strong>📍ciudad de La Paz:</strong> ¿Cuál es el precio máximo que una familia puede pagar sin endeudarse? ¿En qué punto la crisis de abastecimiento es insostenible? Este simulador utiliza <strong>métodos de búsqueda de raíces</strong> (Bisección, Newton-Raphson, Secante) para encontrar esos umbrales críticos.
         </div>
-        <div class="algo-selector">
-          <label>Método:</label>
-          <select id="metodE">
-            <option value="biseccion">Bisección</option>
-            <option value="newton">Newton-Raphson</option>
-            <option value="secante">Secante</option>
-          </select>
-        </div>
-        <div id="e_params">
-          <div class="form-group">
-            <label>Límite inferior [a]:</label>
-            <input type="number" id="e_a" value="0" step="0.5"/>
-          </div>
-          <div class="form-group">
-            <label>Límite superior [b]:</label>
-            <input type="number" id="e_b" value="10" step="0.5"/>
-          </div>
-          <div class="form-group">
-            <label>Tolerancia (ε):</label>
-            <input type="number" id="e_tol" value="0.0001" step="0.00001"/>
-          </div>
-          <div class="form-group">
-            <label>Ingreso mensual familiar (Bs):</label>
-            <input type="number" id="e_ingreso" value="2500"/>
-          </div>
-          <div class="form-group">
-            <label>Precio base canasta (Bs/día):</label>
-            <input type="number" id="e_precio_base" value="80"/>
-          </div>
-        </div>
-        <div id="e_funcion_desc" class="algo-desc">
-          f(x) = precio_base·(1+x)·30 − Ingreso<br/>
-          <small>x = tasa de incremento de precios que agota el ingreso</small>
-        </div>
-        <button class="btn-run" onclick="runEscenarioE()">▶ Encontrar Raíz</button>
       </div>
-      <div class="panel results-panel">
-        <h3 class="panel-title">📊 Convergencia</h3>
-        <div id="resultE" class="result-box">
-          <p class="placeholder-text">Ejecuta la simulación para ver resultados.</p>
+
+      <div class="guia-usuario">
+        <div class="guia-header_cde">
+          <span class="guia-icon">📋</span>
+          <span class="guia-titulo">¿Cómo encontrar el umbral crítico?</span>
+          <button class="guia-toggle" onclick="toggleGuiaE()">−</button>
         </div>
-        <canvas id="chartE" class="chart-canvas"></canvas>
+        <div class="guia-contenido" id="guiaContenidoE">
+          <div class="pasos-grid">
+            <div class="paso-card"><div class="paso-numero">1</div><div class="paso-contenido"><h4>Selecciona la función objetivo</h4><p>Elige qué umbral quieres encontrar: precio límite, tasa de reposición o conflicto.</p><div class="paso-ejemplo">📌 Ejemplo: "Precio límite" responde: ¿cuánto debe subir el precio para agotar mi ingreso?</div></div></div>
+            <div class="paso-card"><div class="paso-numero">2</div><div class="paso-contenido"><h4>Define el método numérico</h4><p>Selecciona Bisección (lento pero seguro), Newton (rápido) o Secante.</p><div class="paso-ejemplo">📌 Ejemplo: Newton-Raphson converge en pocas iteraciones si la estimación inicial es buena.</div></div></div>
+            <div class="paso-card"><div class="paso-numero">3</div><div class="paso-contenido"><h4>Configura el intervalo y tolerancia</h4><p>Define dónde buscar la raíz y qué tan precisa quieres la respuesta.</p><div class="paso-ejemplo">📌 Ejemplo: Busca entre un 0% y un 100% de incremento de precio.</div></div></div>
+            <div class="paso-card"><div class="paso-numero">4</div><div class="paso-contenido"><h4>Ejecuta y analiza la convergencia</h4><p>Observa la tabla de iteraciones y el gráfico de la función para entender cómo el método encuentra la raíz.</p></div></div>
+          </div>
+          <div class="guia-consejo" style="font-size: 0.75rem;color: #854d0e;line-height: 1.4;">💡 <strong>Consejo:</strong> Usa Bisección si no estás seguro de la derivada o la función es complicada. Usa Newton-Raphson si la función es bien comportada y quieres una respuesta rápida.</div>
+        </div>
       </div>
-    </div>
-    <div class="questions-panel">
-      <h3>❓ Preguntas del Escenario E</h3>
-      <div id="questionsE" class="questions-grid"></div>
+
+      <div class="content-grid">
+        <div class="panel">
+          <h3 class="panel-title">⚙ Configuración del Análisis</h3>
+          <div class="algo-selector">
+            <label>Función a analizar:</label>
+            <select id="e_funcion" onchange="updateFuncionE()">
+              <option value="precio_limite">f(x) = Gasto acumulado - Ingreso (Precio Límite)</option>
+              <option value="reposicion">f(x) = Consumo - Tasa de reposición</option>
+              <option value="conflicto">f(x) = Descontento social umbral</option>
+            </select>
+          </div>
+          <div class="algo-selector">
+            <label>Método numérico:</label>
+            <select id="metodE">
+              <option value="biseccion">Bisección</option>
+              <option value="newton">Newton-Raphson</option>
+              <option value="secante">Secante</option>
+            </select>
+          </div>
+          <div id="e_params">
+            <div class="param-group">
+              <label>Límite inferior [a]:</label>
+              <input type="number" id="e_a" value="0" step="0.1"/>
+            </div>
+            <div class="param-group">
+              <label>Límite superior [b]:</label>
+              <input type="number" id="e_b" value="10" step="0.1"/>
+            </div>
+            <div class="param-group">
+              <label>Tolerancia (ε):</label>
+              <input type="number" id="e_tol" value="0.0001" step="0.00001"/>
+            </div>
+            <div class="param-group">
+              <label>Ingreso mensual familiar (Bs):</label>
+              <input type="number" id="e_ingreso" value="2500"/>
+            </div>
+            <div class="param-group">
+              <label>Precio base canasta (Bs/día):</label>
+              <input type="number" id="e_precio_base" value="80"/>
+            </div>
+          </div>
+          <div id="e_funcion_desc" class="algo-desc">
+            f(x) = precio_base·(1+x)·30 − Ingreso<br/>
+            <small>x = tasa de incremento que agota el ingreso</small>
+          </div>
+          <button class="btn-run" onclick="runEscenarioE()">▶ Encontrar Raíz</button>
+        </div>
+
+        <div class="panel results-panel">
+          <div class="resultados-principales" id="resultE"></div>
+          <div class="grafico-card">
+            <canvas id="chartE" class="chart-canvas"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <div class="preguntas-container">
+        <h3>❓ Preguntas Clave del Escenario E</h3>
+        <div id="questionsE" class="preguntas-grid"></div>
+      </div>
+
+      <div class="interpretacion-container" id="interpretacionEContainer">
+        <h4><span class="icono">📖</span> Interpretación del Umbral Crítico</h4>
+        <div class="interpretacion-texto" id="interpretacionTextoE"></div>
+      </div>
     </div>
   </section>
+
+  
 
   <!-- ═══ ESCENARIO F ═══ -->
   <section class="page-section" id="escenarioF">
