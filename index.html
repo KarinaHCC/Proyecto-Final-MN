@@ -939,14 +939,80 @@
   </section>
 
   
-
   <!-- ═══ ESCENARIO F ═══ -->
   <section class="page-section" id="escenarioF">
     <div class="section-header">
-      <div class="section-badge">Escenario F</div>
+      <div class="section-badge">Escenario F - Univ. Lovera Cruz David</div>
       <h2>Rumores y Pánico en la Red de Distribución</h2>
-      <p>Sistemas lineales mal condicionados para modelar cómo pequeños cambios en la percepción social generan grandes cambios en la demanda.</p>
+      <p><strong>Sistemas Lineales Mal Condicionados</strong>: para modelar cómo pequeños cambios en la percepción social generan grandes cambios en la demanda.</p>
     </div>
+
+    <div class="escenario-profesional">
+
+      <!-- Contexto real -->
+      <div class="contexto-real_cde">
+        <div class="contexto-icon">📢</div>
+        <div class="contexto-text">
+          <strong>Contexto real (La Paz - Bolivia):</strong> Durante la crisis de combustible de 2023–2024 en La Paz, rumores difundidos por redes sociales (WhatsApp, Facebook) sobre el cierre inminente de plantas como Senkata generaron compras de pánico masivas en las zonas Norte, Centro y Sur. Este simulador modela ese fenómeno mediante <strong>sistemas lineales mal condicionados</strong>: pequeñas perturbaciones en la percepción social (rumores) producen cambios desproporcionados en la demanda real, revelando la fragilidad del sistema de distribución ante la desinformación.
+        </div>
+      </div>
+
+      <!-- GUÍA DE USO -->
+      <div class="guia-usuario">
+        <div class="guia-header_cde">
+          <span class="guia-icon">📋</span>
+          <span class="guia-titulo">¿Cómo usar este simulador de rumores?</span>
+          <button class="guia-toggle" onclick="toggleGuiaF()">−</button>
+        </div>
+        <div class="guia-contenido" id="guiaContenidoF">
+          <div class="pasos-grid">
+            <div class="paso-card">
+              <div class="paso-numero">1</div>
+              <div class="paso-contenido">
+                <h4>Selecciona el nivel de rumor</h4>
+                <p>Elige la intensidad del rumor en circulación: desde "Sin rumor" (situación normal) hasta "Pánico de compra (+60%)". Representa qué tan extendida está la desinformación en la ciudad.</p>
+                <div class="paso-ejemplo">📌 Ejemplo: "Rumor alto (+30%)" simula que el 30% de la población cree que habrá desabastecimiento total.</div>
+              </div>
+            </div>
+            <div class="paso-card">
+              <div class="paso-numero">2</div>
+              <div class="paso-contenido">
+                <h4>Ajusta la demanda base por zona</h4>
+                <p>Ingresa la demanda normal (sin rumor) de combustible en Bs para las zonas Norte, Centro y Sur de La Paz.</p>
+                <div class="paso-ejemplo">📌 Ejemplo: Zona Centro tiene mayor demanda (350 Bs) por ser la zona más comercial de La Paz.</div>
+              </div>
+            </div>
+            <div class="paso-card">
+              <div class="paso-numero">3</div>
+              <div class="paso-contenido">
+                <h4>Configura los costos de transporte</h4>
+                <p>Modifica la matriz de costos de transporte por unidad (Bs) entre cada planta (P1, P2, P3) y cada zona. Costos altos reflejan rutas bloqueadas o distancias largas.</p>
+                <div class="paso-ejemplo">📌 Ejemplo: Si hay bloqueo en la ruta P1→Norte, sube ese costo a 99 para simular la ruta cortada.</div>
+              </div>
+            </div>
+            <div class="paso-card">
+              <div class="paso-numero">4</div>
+              <div class="paso-contenido">
+                <h4>Ejecuta el análisis y observa el impacto</h4>
+                <p>Haz clic en "Analizar Impacto" para ver cómo el rumor amplifica la demanda, el número de condición de la matriz y la solución del sistema perturbado.</p>
+                <div class="paso-ejemplo">📌 Ejemplo: Un número de condición alto (>100) indica que el sistema es muy sensible: pequeños rumores provocan grandes cambios en la distribución.</div>
+              </div>
+            </div>
+            <div class="paso-card">
+              <div class="paso-numero">5</div>
+              <div class="paso-contenido">
+                <h4>Interpreta las preguntas clave</h4>
+                <p>Revisa las respuestas automáticas a las preguntas del escenario: ¿cuánto cambia la solución?, ¿qué zona se ve más afectada?, ¿cuándo el sistema se vuelve inestable?</p>
+                <div class="paso-ejemplo">📌 Ejemplo: Si la Zona Norte muestra un incremento del 60%, significa que ese sector concentra el mayor pánico de compra.</div>
+              </div>
+            </div>
+          </div>
+          <div class="guia-consejo" style="font-size: 0.75rem;color: #854d0e;line-height: 1.4;">
+            💡 <strong>Consejo:</strong> Compara el escenario "Sin rumor" vs "Pánico de compra" para visualizar cómo la desinformación puede colapsar una red de distribución matemáticamente bien dimensionada.
+          </div>
+        </div>
+      </div>
+
     <div class="content-grid">
       <div class="panel">
         <h3 class="panel-title">⚙ Configuración del Rumor</h3>
@@ -999,15 +1065,83 @@
       <h3>❓ Preguntas del Escenario F</h3>
       <div id="questionsF" class="questions-grid"></div>
     </div>
+    </div><!-- fin escenario-profesional F -->
   </section>
 
   <!-- ═══ ESCENARIO G ═══ -->
   <section class="page-section" id="escenarioG">
     <div class="section-header">
-      <div class="section-badge">Escenario G</div>
+      <div class="section-badge">Escenario G - Univ. Lovera Cruz David</div>
       <h2>Modelo de Difusión de Descontento Social</h2>
       <p>Sistema de EDO que modela la dinámica entre ciudadanos neutrales, manifestantes y mediadores.</p>
     </div>
+
+    <div class="escenario-profesional">
+
+      <!-- Contexto real -->
+      <div class="contexto-real_cde">
+        <div class="contexto-icon">👥</div>
+        <div class="contexto-text">
+          <strong>Contexto real (La Paz - Bolivia):</strong> En episodios como los bloqueos de 2019 y la escasez de combustible de 2023–2024, La Paz experimentó una rápida propagación del descontento social: ciudadanos neutrales se convirtieron en manifestantes activos al verse afectados por el desabastecimiento, mientras que mediadores institucionales (gobierno, iglesia, organizaciones civiles) intentaban reducir la tensión. Este simulador usa un <strong>sistema de EDO (ecuaciones diferenciales ordinarias)</strong> resuelto con RK4 o Heun para modelar esa dinámica: cómo crece, alcanza su pico y se disuelve un conflicto social en función de los parámetros de contagio, diálogo y desgaste institucional.
+        </div>
+      </div>
+
+      <!-- GUÍA DE USO -->
+      <div class="guia-usuario">
+        <div class="guia-header_cde">
+          <span class="guia-icon">📋</span>
+          <span class="guia-titulo">¿Cómo usar este simulador de conflicto social?</span>
+          <button class="guia-toggle" onclick="toggleGuiaG()">−</button>
+        </div>
+        <div class="guia-contenido" id="guiaContenidoG">
+          <div class="pasos-grid">
+            <div class="paso-card">
+              <div class="paso-numero">1</div>
+              <div class="paso-contenido">
+                <h4>Elige el método numérico</h4>
+                <p>Selecciona entre <strong>Runge-Kutta 4 (RK4)</strong> para mayor precisión o <strong>Heun</strong> para una aproximación más rápida. Ambos resuelven el mismo sistema de EDO.</p>
+                <div class="paso-ejemplo">📌 Ejemplo: Usa RK4 para obtener resultados más confiables cuando los parámetros de tasa son muy pequeños (como 0.001).</div>
+              </div>
+            </div>
+            <div class="paso-card">
+              <div class="paso-numero">2</div>
+              <div class="paso-contenido">
+                <h4>Configura las poblaciones iniciales</h4>
+                <p>Define cuántos ciudadanos hay en cada grupo al inicio: <strong>N₀</strong> (neutrales), <strong>M₀</strong> (manifestantes) y <strong>D₀</strong> (mediadores). La suma representa la población total del modelo.</p>
+                <div class="paso-ejemplo">📌 Ejemplo: En La Paz, un escenario realista inicial sería N₀=900, M₀=80, D₀=20 sobre una base de 1000 personas representativas.</div>
+              </div>
+            </div>
+            <div class="paso-card">
+              <div class="paso-numero">3</div>
+              <div class="paso-contenido">
+                <h4>Ajusta las tasas del modelo</h4>
+                <p>Modifica los parámetros que controlan la dinámica: <strong>a</strong> (contagio del descontento), <strong>b</strong> (retorno a la neutralidad), <strong>c</strong> (efectividad del diálogo), <strong>k</strong> (reacción institucional) y <strong>r</strong> (desgaste de mediadores).</p>
+                <div class="paso-ejemplo">📌 Ejemplo: Aumenta "a" para simular una crisis severa con alta propagación del descontento, o sube "c" para ver el efecto de una mediación institucional efectiva.</div>
+              </div>
+            </div>
+            <div class="paso-card">
+              <div class="paso-numero">4</div>
+              <div class="paso-contenido">
+                <h4>Define el horizonte temporal</h4>
+                <p>Establece cuántos días quieres simular. Para bloqueos breves usa 15–30 días; para conflictos prolongados como los de 2019 usa 60–90 días.</p>
+                <div class="paso-ejemplo">📌 Ejemplo: Los bloqueos de noviembre 2019 en La Paz duraron aproximadamente 21 días de alta tensión.</div>
+              </div>
+            </div>
+            <div class="paso-card">
+              <div class="paso-numero">5</div>
+              <div class="paso-contenido">
+                <h4>Analiza el gráfico y las preguntas</h4>
+                <p>Observa cómo evolucionan las tres curvas (N, M, D) en el tiempo. Identifica el pico de manifestantes, cuándo los mediadores logran estabilizar y cuándo el conflicto se disuelve.</p>
+                <div class="paso-ejemplo">📌 Ejemplo: Si la curva de manifestantes nunca baja, significa que los mediadores no son suficientes para contener el conflicto con esos parámetros.</div>
+              </div>
+            </div>
+          </div>
+          <div class="guia-consejo" style="font-size: 0.75rem;color: #854d0e;line-height: 1.4;">
+            💡 <strong>Consejo:</strong> Experimenta con escenarios contrastantes: "sin mediación" (k=0, c=0) vs "mediación efectiva" (k=0.05, c=0.01) para visualizar el impacto que tiene la intervención institucional oportuna en la reducción del conflicto social.
+          </div>
+        </div>
+      </div>
+
     <div class="content-grid">
       <div class="panel">
         <h3 class="panel-title">⚙ Parámetros del Modelo</h3>
@@ -1070,8 +1204,8 @@
       <h3>❓ Preguntas del Escenario G</h3>
       <div id="questionsG" class="questions-grid"></div>
     </div>
+    </div><!-- fin escenario-profesional G -->
   </section>
-
   <!-- ═══ CONCLUSIONES ═══ -->
   <section class="page-section" id="conclusiones">
     <div class="section-header">
