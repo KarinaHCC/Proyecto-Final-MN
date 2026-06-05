@@ -1985,3 +1985,236 @@ body {
 }
 
 /* ============================ FIN ESCENARIO B ============================ */
+
+
+
+
+
+/* ============================================
+   ESTILOS COMUNES PARA ESCENARIOS C, D y E
+   ============================================ */
+.contexto-real_cde { /*color del contenedor de contexto*/
+  background: #8064ae;
+  border-left: 5px solid #f2eeea;
+  border-radius: 1rem;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+}
+.guia-header_cde {
+  background: #1e356f;
+  color: white;
+  padding: 0.8rem 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  cursor: pointer;
+}
+.escenario-profesional {
+  background: #0f172a; /* Un fondo oscuro unificado */
+  border-radius: 1.5rem;
+  padding: 1.5rem;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  margin-top: 1rem;
+}
+
+/* Panel de resultados principales (KPI Cards) */
+.resultados-principales {
+  background: #1e293b;
+  border-radius: 1rem;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.result-title {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #f59e0b;
+  margin-bottom: 0.5rem;
+  border-bottom: 1px solid #334155;
+  padding-bottom: 0.3rem;
+}
+
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 0.8rem;
+}
+
+.kpi-card {
+  background: #0f172a;
+  border: 1px solid #334155;
+  border-radius: 0.75rem;
+  padding: 0.6rem;
+  text-align: center;
+}
+
+.kpi-label {
+  font-size: 0.7rem;
+  color: #94a3b8;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.kpi-value {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #fbbf24;
+  font-family: var(--font-mono);
+}
+
+.kpi-sub {
+  font-size: 0.6rem;
+  color: #64748b;
+}
+
+/* Estilos para la tabla de iteraciones de Newton/Bisección */
+.tabla-iteraciones-e {
+  margin-top: 1rem;
+}
+
+.tabla-iteraciones-e h4 {
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: #cbd5e1;
+}
+
+.tabla-iteracion-e {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.65rem;
+  font-family: var(--font-mono);
+}
+
+.tabla-iteracion-e th {
+  background: #1e293b;
+  color: #f59e0b;
+  padding: 0.4rem 0.3rem;
+  text-align: center;
+  position: sticky;
+  top: 0;
+}
+
+.tabla-iteracion-e td {
+  padding: 0.3rem 0.3rem;
+  text-align: center;
+  border-bottom: 1px solid #334155;
+  color: #cbd5e1;
+}
+
+.tabla-scroll {
+  max-height: 180px;
+  overflow-y: auto;
+  border: 1px solid #334155;
+  border-radius: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+/* Ajustes para el contenedor de interpretación */
+.interpretacion-container {
+  background: #1e293b;
+  border-radius: 0.75rem;
+  padding: 1rem;
+  margin-top: 1.5rem;
+  border-left: 4px solid #f59e0b;
+}
+
+.interpretacion-container h4 {
+  font-size: 0.85rem;
+  color: #f59e0b;
+  margin-bottom: 0.5rem;
+}
+
+.interpretacion-texto {
+  font-size: 0.75rem;
+  color: #cbd5e1;
+  line-height: 1.5;
+}
+
+.interpretacion-texto ul, .interpretacion-texto ol {
+  margin-left: 1rem;
+  margin-top: 0.3rem;
+}
+
+.interpretacion-texto strong {
+  color: #fbbf24;
+}
+
+/* Mejoras para los paneles de parámetros */
+.param-group {
+  margin-bottom: 1rem;
+}
+
+.param-group label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #94a3b8;
+  margin-bottom: 0.3rem;
+}
+
+.param-group input, .param-group select {
+  width: 100%;
+  background: #0f172a;
+  border: 1px solid #334155;
+  border-radius: 0.5rem;
+  padding: 0.5rem;
+  color: #f1f5f9;
+  font-size: 0.85rem;
+}
+
+.preguntas-container {
+  margin-top: 1.5rem;
+  background: transparent;
+  border-radius: 1rem;
+  padding: 0;
+}
+
+.preguntas-container h3 {
+  color: #f59e0b;
+  font-size: 1rem;
+  margin-bottom: 1rem;
+  border-left: 3px solid #f59e0b;
+  padding-left: 0.8rem;
+}
+
+.preguntas-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.pregunta-item {
+  background: #1e293b;
+  border-radius: 0.75rem;
+  padding: 0.8rem;
+  border-left: 3px solid #475569;
+  transition: all 0.2s ease;
+}
+
+.pregunta-item:hover {
+  border-left-color: #f59e0b;
+  background: #334155;
+}
+
+.pregunta-item strong {
+  color: #fbbf24;
+  display: block;
+  margin-bottom: 0.3rem;
+  font-size: 0.8rem;
+}
+
+.pregunta-item br {
+  display: none;
+}
+.pregunta-item:not(:first-child) {
+    margin-top: 0;
+}
+
+/* ============================ FIN ESCENARIO C, D y E ============================ */
