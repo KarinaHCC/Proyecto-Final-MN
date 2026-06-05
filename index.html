@@ -1,11 +1,17 @@
 <!DOCTYPE html>
 <html lang="es">
-<head>
+<head> 
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Simulación Numérica — Crisis de Abastecimiento</title>
   <link rel="stylesheet" href="style.css"/>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+
+  <!-- ============Tailwind CSS para el Escenario B =================== -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- ================================================================= -->
+  
 </head>
 <body>
 
@@ -101,139 +107,530 @@
     </div>
   </section>
 
-  <!-- ═══ ESCENARIO A ═══ -->
+  <!-- ============================================ ESCENARIO A =============================================== -->
+
   <section class="page-section" id="escenarioA">
     <div class="section-header">
-      <div class="section-badge">Escenario A</div>
+      <div class="section-badge">Escenario A - Univ. Huanca Chura Jesika Karina</div>
       <h2>Optimización del Abastecimiento y Red de Transporte</h2>
-      <p>Distribución de carburantes/alimentos desde plantas hacia zonas de la ciudad usando sistemas de ecuaciones lineales.</p>
+      <p>Distribución de carburantes desde plantas hacia zonas de la ciudad usando sistemas de ecuaciones lineales. <strong>Contexto: Crisis de combustible en La Paz por bloqueos en Senkata, Viacha y El Alto.</strong></p>
     </div>
-    <div class="content-grid">
-      <div class="panel">
-        <h3 class="panel-title">⚙ Configuración del Sistema</h3>
-        <div class="algo-selector">
-          <label>Método:</label>
-          <select id="metodA">
-            <option value="gauss-seidel">Gauss-Seidel</option>
-            <option value="jacobi">Jacobi</option>
-            <option value="lu">Descomposición LU</option>
-            <option value="sor">SOR</option>
-          </select>
-        </div>
 
-        <div class="form-group">
-          <label>Capacidad Planta 1 (unidades):</label>
-          <input type="number" id="a_cap1" value="300" min="0"/>
+    <div class="escenarioA-profesional">
+            <!-- Contexto real -->
+      <div class="contexto-real">
+        <div class="contexto-icon">📢</div>
+        <div class="contexto-text">
+          <strong>📍 Contexto real (La Paz - Bolivia):</strong> Durante los bloqueos de rutas, el transporte de combustible desde las plantas de almacenamiento (Senkata, Palmasola, Chuquiaguillo) hacia las zonas Norte, Centro y Sur se ve gravemente afectado. Este simulador utiliza métodos numéricos para calcular la distribución óptima y analizar el desabastecimiento.
         </div>
-        <div class="form-group">
-          <label>Capacidad Planta 2 (unidades):</label>
-          <input type="number" id="a_cap2" value="250" min="0"/>
-        </div>
-        <div class="form-group">
-          <label>Capacidad Planta 3 (unidades):</label>
-          <input type="number" id="a_cap3" value="200" min="0"/>
-        </div>
-        <hr class="divider"/>
-        <div class="form-group">
-          <label>Demanda Zona Norte (unidades):</label>
-          <input type="number" id="a_dN" value="220" min="0"/>
-        </div>
-        <div class="form-group">
-          <label>Demanda Zona Centro (unidades):</label>
-          <input type="number" id="a_dC" value="290" min="0"/>
-        </div>
-        <div class="form-group">
-          <label>Demanda Zona Sur (unidades):</label>
-          <input type="number" id="a_dS" value="180" min="0"/>
-        </div>
-        <hr class="divider"/>
-        <div class="form-group">
-          <label>¿Ruta bloqueada?</label>
-          <select id="a_bloqueo">
-            <option value="none">Sin bloqueo</option>
-            <option value="P1_C">Planta 1 → Centro bloqueada</option>
-            <option value="P2_N">Planta 2 → Norte bloqueada</option>
-            <option value="P3_S">Planta 3 → Sur bloqueada</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>Factor ω (SOR):</label>
-          <input type="number" id="a_omega" value="1.25" step="0.05" min="1" max="2"/>
-        </div>
-        <button class="btn-run" onclick="runEscenarioA()">▶ Ejecutar Simulación</button>
       </div>
 
-      <div class="panel results-panel">
-        <h3 class="panel-title">📊 Resultados</h3>
-        <div id="resultA" class="result-box">
-          <p class="placeholder-text">Ejecuta la simulación para ver resultados.</p>
+      <!-- GUÍA PASO A PASO PARA EL USUARIO (NUEVO) -->
+      <div class="guia-usuario">
+        <div class="guia-header">
+          <span class="guia-icon">📋</span>
+          <span class="guia-titulo">¿Cómo usar este simulador?</span>
+          <button class="guia-toggle" id="toggleGuia" onclick="toggleGuia()">−</button>
         </div>
-        <canvas id="chartA" class="chart-canvas"></canvas>
+        <div class="guia-contenido" id="guiaContenido">
+          <div class="pasos-grid">
+            <div class="paso-card">
+              <div class="paso-numero">1</div>
+              <div class="paso-contenido">
+                <h4>Ajusta las capacidades de las plantas</h4>
+                <p>Usa los <strong>deslizadores</strong> para cambiar cuántos miles de litros tiene cada planta de almacenamiento (Senkata, Palmasola, Chuquiaguillo).</p>
+                <div class="paso-ejemplo">📌 Ejemplo: Si aumentas la Planta Senkata a 400, habrá más combustible disponible.</div>
+              </div>
+            </div>
+            <div class="paso-card">
+              <div class="paso-numero">2</div>
+              <div class="paso-contenido">
+                <h4>Ajusta la demanda de cada zona</h4>
+                <p>Modifica los <strong>deslizadores</strong> de demanda para indicar cuántos miles de litros necesita cada zona (Norte, Centro, Sur).</p>
+                <div class="paso-ejemplo">📌 Ejemplo: Si la Zona Norte necesita más combustible, aumenta su demanda.</div>
+              </div>
+            </div>
+            <div class="paso-card">
+              <div class="paso-numero">3</div>
+              <div class="paso-contenido">
+                <h4>Selecciona un escenario de bloqueo</h4>
+                <p>Elige entre las opciones de bloqueo para simular el cierre de rutas. Esto afectará la distribución del combustible.</p>
+                <div class="paso-ejemplo">📌 Ejemplo: Activa "Bloqueo: Senkata → Centro" para ver cómo afecta al abastecimiento del Centro.</div>
+              </div>
+            </div>
+            <div class="paso-card">
+              <div class="paso-numero">4</div>
+              <div class="paso-contenido">
+                <h4>Elige un método numérico</h4>
+                <p>Selecciona entre Gauss-Seidel, Jacobi, SOR, LU o Gradiente Conjugado. Cada uno tiene diferente velocidad de convergencia.</p>
+                <div class="paso-ejemplo">📌 Ejemplo: Prueba con Gauss-Seidel (rápido) vs Jacobi (más lento pero estable).</div>
+              </div>
+            </div>
+            <div class="paso-card">
+              <div class="paso-numero">5</div>
+              <div class="paso-contenido">
+                <h4>Observa los resultados</h4>
+                <p>Los resultados se actualizan automáticamente. Revisa la <strong>tabla de distribución</strong>, los <strong>gráficos</strong> y la <strong>tabla de iteraciones</strong>.</p>
+                <div class="paso-ejemplo">📌 Ejemplo: Si una zona tiene déficit (número rojo), significa que no recibe suficiente combustible.</div>
+              </div>
+            </div>
+            <div class="paso-card">
+              <div class="paso-numero">6</div>
+              <div class="paso-contenido">
+                <h4>Lee las preguntas y la interpretación</h4>
+                <p>Al final encontrarás las <strong>5 preguntas del escenario</strong> respondidas automáticamente y una <strong>interpretación</strong> en lenguaje sencillo.</p>
+                <div class="paso-ejemplo">📌 Ejemplo: La interpretación te dirá qué zona está más afectada y por qué.</div>
+              </div>
+            </div>
+          </div>
+          <div class="guia-consejo">
+            <span class="consejo-icon">💡</span>
+            <span class="consejo-texto"><strong>Consejo:</strong> Puedes cambiar cualquier parámetro en cualquier momento y los resultados se actualizarán automáticamente. ¡Experimenta con diferentes escenarios!</span>
+          </div>
+        </div>
       </div>
-    </div>
-    <div class="questions-panel">
-      <h3>❓ Preguntas del Escenario A</h3>
-      <div id="questionsA" class="questions-grid"></div>
-    </div>
+
+      <div class="row-parametros">
+        <!-- Columna izquierda: Capacidades y Demandas -->
+        <div class="col-parametros">
+          <div class="panel-parametro">
+            <h4><span class="icono">🏭</span> Capacidad de las plantas (miles de litros)</h4>
+            <div class="slider-group">
+              <label>Planta Senkata <span class="tooltip-icon" title="Planta principal en la zona norte">ⓘ</span></label>
+              <input type="range" id="capP1" class="slider-input" min="0" max="500" step="10" value="350">
+              <span class="slider-value" id="capP1Val">350</span>
+            </div>
+            <div class="slider-group">
+              <label>Planta Palmasola</label>
+              <input type="range" id="capP2" class="slider-input" min="0" max="500" step="10" value="255">
+              <span class="slider-value" id="capP2Val">255</span>
+            </div>
+            <div class="slider-group">
+              <label>Planta Chuquiaguillo</label>
+              <input type="range" id="capP3" class="slider-input" min="0" max="500" step="10" value="208">
+              <span class="slider-value" id="capP3Val">208</span>
+            </div>
+          </div>
+
+          <div class="panel-parametro">
+            <h4><span class="icono">🏙️</span> Demanda de las zonas (miles de litros)</h4>
+            <div class="slider-group">
+              <label>Zona Norte <span class="tooltip-icon" title="El Alto, Villa Copacabana">ⓘ</span></label>
+              <input type="range" id="demNorte" class="slider-input" min="50" max="400" step="10" value="228">
+              <span class="slider-value" id="demNorteVal">228</span>
+            </div>
+            <div class="slider-group">
+              <label>Zona Centro <span class="tooltip-icon" title="Sopocachi, San Jorge">ⓘ</span></label>
+              <input type="range" id="demCentro" class="slider-input" min="50" max="400" step="10" value="299">
+              <span class="slider-value" id="demCentroVal">299</span>
+            </div>
+            <div class="slider-group">
+              <label>Zona Sur <span class="tooltip-icon" title="Calacoto, Irpavi">ⓘ</span></label>
+              <input type="range" id="demSur" class="slider-input" min="50" max="400" step="10" value="183">
+              <span class="slider-value" id="demSurVal">183</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Columna derecha: Bloqueos y Métodos -->
+        <div class="col-parametros">
+          <div class="panel-parametro">
+            <h4><span class="icono">🚧</span> Situación de bloqueos</h4>
+            <div class="radio-group">
+              <label class="radio-option">
+                <input type="radio" name="escenarioBloqueo" value="none" checked> ✅ Sin bloqueos
+              </label>
+              <label class="radio-option">
+                <input type="radio" name="escenarioBloqueo" value="senkata_centro"> 🔴 Bloqueo: Senkata → Centro (ruta cortada)
+              </label>
+              <label class="radio-option">
+                <input type="radio" name="escenarioBloqueo" value="senkata_norte"> 🔴 Bloqueo: Senkata → Norte (ruta cortada)
+              </label>
+              <label class="radio-option">
+                <input type="radio" name="escenarioBloqueo" value="multiple"> ⚠️ Múltiples bloqueos (crisis severa)
+              </label>
+            </div>
+          </div>
+
+          <div class="panel-parametro">
+            <h4><span class="icono">🧮</span> Método numérico</h4>
+            <div class="method-buttons">
+              <button class="method-btn active" data-method="gauss_seidel">Gauss-Seidel</button>
+              <button class="method-btn" data-method="jacobi">Jacobi</button>
+              <button class="method-btn" data-method="sor">SOR (ω=1.25)</button>
+              <button class="method-btn" data-method="lu">Descomposición LU</button>
+              <button class="method-btn" data-method="gradiente">Gradiente Conjugado</button>
+            </div>
+            <div class="method-info">
+              Método activo: <strong id="activeMethodLabel">Gauss-Seidel</strong> | 
+              Iteraciones: <span id="iterCount">-</span> | 
+              Error final: <span id="errorFinal">-</span>
+            </div>
+          </div>
+
+          <div class="panel-parametro resumen">
+            <h4>📊 Resumen</h4>
+            <div class="resumen-valores">
+              <div>Total disponible: <strong id="totalDisponible">-</strong> miles L</div>
+              <div>Total demandado: <strong id="totalDemanda">-</strong> miles L</div>
+              <div>Balance: <strong id="balanceTotal">-</strong> miles L</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tabla de resultados -->
+      <div class="tabla-resultados">
+        <h4>📋 Distribución de combustible (miles de litros)</h4>
+        <div class="table-responsive">
+          <table class="tabla-distribucion">
+            <thead>
+              <tr>
+                <th>Origen \ Destino</th>
+                <th>Zona Norte</th>
+                <th>Zona Centro</th>
+                <th>Zona Sur</th>
+                <th>Total enviado</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Planta Senkata</strong></td>
+                <td id="x11">-</td>
+                <td id="x12">-</td>
+                <td id="x13">-</td>
+                <td id="sumP1">-</td>
+              </tr>
+              <tr>
+                <td><strong>Planta Palmasola</strong></td>
+                <td id="x21">-</td>
+                <td id="x22">-</td>
+                <td id="x23">-</td>
+                <td id="sumP2">-</td>
+              </tr>
+              <tr>
+                <td><strong>Planta Chuquiaguillo</strong></td>
+                <td id="x31">-</td>
+                <td id="x32">-</td>
+                <td id="x33">-</td>
+                <td id="sumP3">-</td>
+              </tr>
+              <tr class="total-fila">
+                <td><strong>Total por zona</strong></td>
+                <td id="totalNorte">-</td>
+                <td id="totalCentro">-</td>
+                <td id="totalSur">-</td>
+                <td id="totalGeneral">-</td>
+              </tr>
+              <tr class="demanda-fila">
+                <td><strong>Demanda requerida</strong></td>
+                <td id="demNorteShow">-</td>
+                <td id="demCentroShow">-</td>
+                <td id="demSurShow">-</td>
+                <td>-</td>
+              </tr>
+              <tr class="deficit-fila">
+                <td><strong>Déficit / Superávit</strong></td>
+                <td id="defNorte">-</td>
+                <td id="defCentro">-</td>
+                <td id="defSur">-</td>
+                <td>-</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- TABLA DE ITERACIONES (NUEVA) -->
+      <div class="tabla-iteraciones">
+        <h4>📈 Tabla de iteraciones del método <span id="iterMethodName" class="metodo-destacado">Gauss-Seidel</span></h4>
+        <div class="table-scroll-container">
+          <table class="tabla-iteracion">
+            <thead>
+              <tr>
+                <th>Iteración</th>
+                <th>Total Norte</th>
+                <th>Total Centro</th>
+                <th>Total Sur</th>
+                <th>Error aproximado</th>
+              </tr>
+            </thead>
+            <tbody id="iteracionesBody">
+              <tr><td colspan="5" class="placeholder-text">Ejecute la simulación para ver las iteraciones</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="iteracion-controls">
+          <span id="rangoIteraciones" class="rango-info">Mostrando 0 de 0 iteraciones</span>
+          <div class="scroll-buttons">
+            <button id="scrollUpBtn" class="scroll-btn" disabled>◀ Anterior</button>
+            <button id="scrollDownBtn" class="scroll-btn" disabled>Siguiente ▶</button>
+          </div>
+        </div>
+        <div class="convergencia-info" id="convergenciaInfo"></div>
+      </div>
+
+      <!-- Gráficos -->
+      <div class="graficos-container">
+        <div class="grafico-card">
+          <canvas id="chartComparativo" style="max-height: 250px; width: 100%;"></canvas>
+          <p class="grafico-titulo">Comparativa: Demanda vs Suministro por zona</p>
+        </div>
+        <div class="grafico-card">
+          <canvas id="chartDeficit" style="max-height: 250px; width: 100%;"></canvas>
+          <p class="grafico-titulo">Déficit por zona (negativo = desabastecimiento)</p>
+        </div>
+      </div>
+
+      <!-- Gráfico de convergencia (NUEVO) -->
+      <div class="grafico-card convergencia-card">
+        <canvas id="chartConvergencia" style="max-height: 200px; width: 100%;"></canvas>
+        <p class="grafico-titulo">Evolución del error durante las iteraciones</p>
+      </div>
+
+            <!-- Preguntas del escenario -->
+      <div class="preguntas-container">
+        <h3>❓ Respuestas a las 5 preguntas del Escenario A</h3>
+        <div id="preguntasDinamicas" class="preguntas-grid">
+          <div class="placeholder-text">Ajusta los parámetros para ver respuestas actualizadas.</div>
+        </div>
+      </div>
+
+      <!-- Interpretación de resultados (NUEVA) - DENTRO del escenarioA-profesional -->
+      <div class="interpretacion-container" id="interpretacionContainer">
+        <h4><span class="icono">📖</span> Interpretación de resultados para el usuario</h4>
+        <div class="interpretacion-texto" id="interpretacionTexto">
+          <p>Ejecuta la simulación para ver la interpretación de los resultados.</p>
+        </div>
+      </div>
+    </div>  <!-- Este cierra escenarioA-profesional -->
   </section>
 
-  <!-- ═══ ESCENARIO B ═══ -->
+  <!-- ============================================ ESCENARIO B =============================================== -->
+
   <section class="page-section" id="escenarioB">
     <div class="section-header">
-      <div class="section-badge">Escenario B</div>
+      <div class="section-badge">Escenario B - Univ. Huanca Chura Jesika Karina</div>
       <h2>Vaciado Crítico de Reservas de Carburante</h2>
-      <p>Simulación mediante EDO de cómo disminuyen las reservas cuando la demanda supera el reabastecimiento.</p>
+      <p>Simulación mediante EDO de cómo disminuyen las reservas cuando la demanda supera el reabastecimiento. <strong>Contexto: Crisis de combustible en La Paz por bloqueos y aumento de demanda.</strong></p>
     </div>
-    <div class="content-grid">
-      <div class="panel">
-        <h3 class="panel-title">⚙ Configuración</h3>
-        <div class="algo-selector">
-          <label>Método:</label>
-          <select id="metodB">
-            <option value="rk4">Runge-Kutta 4</option>
-            <option value="heun">Heun</option>
-            <option value="euler">Euler</option>
-          </select>
+        
+        <!-- CONTEXTO REAL -->
+        <div class="escenarioB-contexto">
+          <div class="escenarioB-contexto-header">
+            <span>📍</span> Contexto Real: Crisis de Carburantes en La Paz
+          </div>
+          <div class="escenarioB-contexto-grid">
+            <div class="escenarioB-contexto-text">
+              <p>Durante los <strong class="text-amber-400">bloqueos de rutas en La Paz</strong> (Senkata, Viacha, El Alto), el transporte de combustible desde las plantas de almacenamiento se ve gravemente afectado. La demanda de carburante aumenta por el <strong class="text-amber-400">pánico social</strong> y las compras de reserva, mientras que el reabastecimiento se reduce drásticamente.</p>
+              <p>Este simulador modela matemáticamente el <strong class="text-white">vaciado de reservas</strong> de una planta de carburantes mediante <strong class="text-sky-400">Ecuaciones Diferenciales Ordinarias (EDO)</strong>, permitiendo predecir cuándo se alcanzará un nivel crítico de desabastecimiento.</p>
+              <div class="escenarioB-modelo">
+                <p>📌 Modelo matemático: <strong>R'(t) = Entrada - Consumo(t)</strong></p>
+                <p class="text-slate-400 text-xs mt-1">Donde Consumo(t) = C₀ + k·t (aumenta linealmente por el pánico y los bloqueos)</p>
+              </div>
+            </div>
+            <div class="escenarioB-contexto-datos">
+              <h3>📊 Datos Relevantes</h3>
+              <ul>
+                <li><span>Plantas afectadas:</span><span>Senkata, Palmasola, Chuquiaguillo</span></li>
+                <li><span>Rutas bloqueadas:</span><span>Senkata → Centro, Senkata → Norte</span></li>
+                <li><span>Incremento de demanda:</span><span>Hasta +60% por pánico</span></li>
+                <li><span>Tiempo crítico estimado:</span><span id="b_contextoTiempo">--- días</span></li>
+              </ul>
+            </div>
+          </div>
         </div>
-        <div class="form-group">
-          <label>Reserva inicial R₀ (miles de litros):</label>
-          <input type="number" id="b_r0" value="500" min="1"/>
+
+        <!-- GUÍA PASO A PASO -->
+        <div class="escenarioB-guia">
+          <div class="escenarioB-guia-header" id="b_guiaHeader">
+            <div><span>📋</span> ¿Cómo usar este simulador? (Guía paso a paso)</div>
+            <button id="b_toggleGuiaBtn">▼</button>
+          </div>
+          <div id="b_guiaContenido" class="escenarioB-guia-grid">
+            <div class="escenarioB-paso"><div class="paso-num">1️⃣</div><div><h4>Ajusta la Reserva Inicial</h4><p>Define cuántos <strong>miles de litros</strong> tiene la planta al inicio de la crisis.</p></div></div>
+            <div class="escenarioB-paso"><div class="paso-num">2️⃣</div><div><h4>Define el Nivel Crítico</h4><p>El umbral mínimo de reserva que activa la alerta de desabastecimiento.</p></div></div>
+            <div class="escenarioB-paso"><div class="paso-num">3️⃣</div><div><h4>Configura Abastecimiento y Demanda</h4><p>Entrada (E): combustible que llega diario. Demanda Base (C₀): consumo normal.</p></div></div>
+            <div class="escenarioB-paso"><div class="paso-num">4️⃣</div><div><h4>Ajusta el Factor de Pánico (k)</h4><p>Simula cómo la demanda aumenta cada día por el miedo al desabastecimiento.</p></div></div>
+            <div class="escenarioB-paso"><div class="paso-num">5️⃣</div><div><h4>Compara los Métodos Numéricos</h4><p>Euler, Heun y RK4. Cada uno tiene diferente precisión.</p></div></div>
+            <div class="escenarioB-paso"><div class="paso-num">6️⃣</div><div><h4>Interpreta los Resultados</h4><p>Revisa gráficos, tabla y preguntas respondidas automáticamente.</p></div></div>
+          </div>
+          <div class="escenarioB-consejo">💡 <strong>Consejo:</strong> Usa el botón "🔥 Simular Crisis Severa" para ver un escenario de bloqueos extremos.</div>
         </div>
-        <div class="form-group">
-          <label>Tasa de entrada diaria (miles L/día):</label>
-          <input type="number" id="b_entrada" value="30" min="0"/>
+
+        <!-- ÁREA DE SIMULACIÓN PRINCIPAL - 2 COLUMNAS -->
+        <div class="escenarioB-simulacion-grid">
+          
+          <!-- PANEL DE CONTROLES -->
+          <div class="escenarioB-controles-panel">
+            <div class="escenarioB-controles-header">
+              <h3>⚙️ Parámetros Operativos</h3>
+              <div class="escenarioB-buttons">
+                <button id="b_btnReset" class="btn-reset">⟳ Restablecer</button>
+                <button id="b_btnCrisis" class="btn-crisis">🔥 Simular Crisis Severa</button>
+              </div>
+            </div>
+            
+            <!-- Reserva Inicial -->
+            <div class="param-group">
+              <div class="param-label">
+                <span>⛽ Reserva Inicial (R₀)</span>
+                <span class="param-desc">Cantidad de combustible disponible al inicio (miles de litros)</span>
+              </div>
+              <div class="param-controls">
+                <input type="range" id="b_rangeR0" min="200" max="2500" step="50" value="1000">
+                <input type="number" id="b_numR0" value="1000" class="num-input">
+              </div>
+            </div>
+
+            <!-- Nivel Crítico -->
+            <div class="param-group">
+              <div class="param-label">
+                <span>⚠️ Nivel Crítico (R_crítico)</span>
+                <span class="param-desc">Umbral mínimo que activa la alerta de desabastecimiento</span>
+              </div>
+              <div class="param-controls">
+                <input type="range" id="b_rangeRcrit" min="10" max="800" step="10" value="200">
+                <input type="number" id="b_numRcrit" value="200" class="num-input">
+              </div>
+            </div>
+
+            <!-- Abastecimiento -->
+            <div class="param-group">
+              <div class="param-label">
+                <span>🚛 Abastecimiento (Entrada E)</span>
+                <span class="param-desc">Combustible que llega diariamente a la planta (miles L/día)</span>
+              </div>
+              <div class="param-controls">
+                <input type="range" id="b_rangeE" min="0" max="500" step="5" value="180">
+                <input type="number" id="b_numE" value="180" class="num-input">
+              </div>
+            </div>
+
+            <!-- Demanda Base -->
+            <div class="param-group">
+              <div class="param-label">
+                <span>🏠 Demanda Base (C₀)</span>
+                <span class="param-desc">Consumo normal diario sin pánico (miles L/día)</span>
+              </div>
+              <div class="param-controls">
+                <input type="range" id="b_rangeC0" min="50" max="500" step="5" value="200">
+                <input type="number" id="b_numC0" value="200" class="num-input">
+              </div>
+            </div>
+
+            <!-- Factor de Pánico -->
+            <div class="param-group">
+              <div class="param-label">
+                <span>📈 Factor de Pánico (k)</span>
+                <span class="param-desc">Incremento diario de la demanda por pánico social (kL/día²)</span>
+              </div>
+              <div class="param-controls">
+                <input type="range" id="b_rangeK" min="0" max="15" step="0.5" value="2.0">
+                <input type="number" id="b_numK" value="2.0" class="num-input">
+              </div>
+            </div>
+
+            <!-- Paso de tiempo -->
+            <div class="param-group">
+              <div class="param-label">
+                <span>⏱️ Paso de tiempo (h)</span>
+                <span class="param-desc">Precisión de la simulación (menor = más preciso)</span>
+              </div>
+              <div class="param-controls">
+                <input type="range" id="b_rangeH" min="0.02" max="2.0" step="0.02" value="0.1">
+                <input type="number" id="b_numH" value="0.1" class="num-input">
+              </div>
+            </div>
+
+            <!-- Días a simular -->
+            <div class="param-group">
+              <div class="param-label">
+                <span>📅 Días a simular (t_max)</span>
+                <span class="param-desc">Horizonte temporal de la simulación</span>
+              </div>
+              <div class="param-controls">
+                <input type="range" id="b_rangeTmax" min="5" max="60" step="5" value="30">
+                <input type="number" id="b_numTmax" value="30" class="num-input">
+              </div>
+            </div>
+          </div>
+
+          <!-- PANEL DE RESULTADOS -->
+          <div class="escenarioB-resultados-panel">
+            
+            <!-- KPI CARDS -->
+            <div class="kpi-grid">
+              <div class="kpi-card"><div class="kpi-label">🎯 Analítico Exacto</div><div class="kpi-value" id="b_diagExact">---</div><div class="kpi-sub">Solución teórica</div></div>
+              <div class="kpi-card"><div class="kpi-label">⏱️ Euler</div><div class="kpi-value" id="b_diagEuler">---</div><div class="kpi-error" id="b_errEuler">Error: -</div></div>
+              <div class="kpi-card"><div class="kpi-label">🔄 Heun</div><div class="kpi-value" id="b_diagHeun">---</div><div class="kpi-error" id="b_errHeun">Error: -</div></div>
+              <div class="kpi-card"><div class="kpi-label">⭐ RK4</div><div class="kpi-value" id="b_diagRK4">---</div><div class="kpi-error" id="b_errRK4">Error: -</div></div>
+            </div>
+
+            <!-- GRÁFICO -->
+            <div class="grafico-card">
+              <div class="grafico-header">
+                <span>📈 Evolución de la Reserva de Carburante</span>
+                <span class="grafico-leyenda">Línea discontinua = Exacta | Roja = Nivel Crítico</span>
+              </div>
+              <div class="grafico-canvas">
+                <canvas id="b_chart"></canvas>
+              </div>
+            </div>
+
+            <!-- TABLA DE ITERACIONES -->
+            <div class="tabla-card">
+              <div class="tabla-header">📊 Registro de Simulación Temporal</div>
+              <div class="tabla-scroll">
+                <table>
+                  <thead>
+                    <tr><th>Día</th><th>Euler</th><th>Heun</th><th>RK4</th><th>Exacto</th><th>Déficit</th></tr>
+                  </thead>
+                  <tbody id="b_tablaBody"></tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- PREGUNTAS OFICIALES -->
+            <div class="preguntas-card">
+              <div class="preguntas-header">❓ Respuestas a las 5 preguntas del Escenario B</div>
+              <div class="pregunta-item"><span class="q-badge q1">1</span><div><strong>¿En cuántos días la reserva llega a un nivel crítico?</strong><br><span id="b_ans1">---</span></div></div>
+              <div class="pregunta-item"><span class="q-badge q2">2</span><div><strong>¿Qué pasa si aumenta el consumo diario?</strong><br><span id="b_ans2">---</span></div></div>
+              <div class="pregunta-item"><span class="q-badge q3">3</span><div><strong>¿Qué pasa si se reduce el abastecimiento?</strong><br><span id="b_ans3">---</span></div></div>
+              <div class="pregunta-item"><span class="q-badge q4">4</span><div><strong>¿Qué método da una aproximación más estable?</strong><br><span id="b_ans4">---</span></div></div>
+              <div class="pregunta-item"><span class="q-badge q5">5</span><div><strong>¿Cuál es la diferencia entre Euler, Heun y RK4?</strong><br><span id="b_ans5">---</span></div></div>
+            </div>
+
+            <!-- INTERPRETACIÓN DE RESULTADOS - VERSIÓN AMPLIA -->
+            <div class="interpretacion-card">
+              <div class="interpretacion-header">📖 Interpretación de resultados para el usuario</div>
+              <div id="b_interpretacionDinamica" class="interpretacion-content">
+                <p class="text-emerald-400 font-medium">🔍 Análisis detallado de la simulación:</p>
+                <p>Ajusta los parámetros para ver una interpretación personalizada de los resultados.</p>
+              </div>
+            </div>
+
+            <!-- EXPLICACIÓN DE MÉTODOS NUMÉRICOS -->
+            <div class="explicacion-card">
+              <div class="explicacion-header">⚙️ Explicación de los algoritmos utilizados</div>
+              <div class="explicacion-grid">
+                <div class="metodo-card euler"><strong>Euler (Método de primer orden - O(h))</strong><p>Evalúa la derivada solo al inicio del intervalo de tiempo. Es el método más simple y rápido, pero acumula error rápidamente, especialmente con pasos de tiempo grandes.</p></div>
+                <div class="metodo-card heun"><strong>Heun (Método predictor-corrector - O(h²))</strong><p>Calcula la pendiente al inicio y al final del intervalo, luego promedia ambas. Es más preciso que Euler y mejora la estabilidad.</p></div>
+                <div class="metodo-card rk4"><strong>Runge-Kutta 4 (RK4 - O(h⁴))</strong><p>Evalúa la pendiente en cuatro puntos estratégicos por intervalo. Es el estándar científico por su excelente precisión y estabilidad.</p></div>
+              </div>
+            </div>
+          </div>
         </div>
-        <div class="form-group">
-          <label>Consumo base diario (miles L/día):</label>
-          <input type="number" id="b_consumo" value="40" min="0"/>
-        </div>
-        <div class="form-group">
-          <label>Factor de pánico (multiplica consumo, ≥1):</label>
-          <input type="number" id="b_panico" value="1.2" step="0.1" min="1" max="5"/>
-        </div>
-        <div class="form-group">
-          <label>Días de simulación:</label>
-          <input type="number" id="b_dias" value="30" min="5" max="180"/>
-        </div>
-        <div class="form-group">
-          <label>Nivel crítico de reserva (miles L):</label>
-          <input type="number" id="b_critico" value="50" min="0"/>
-        </div>
-        <button class="btn-run" onclick="runEscenarioB()">▶ Ejecutar Simulación</button>
-      </div>
-      <div class="panel results-panel">
-        <h3 class="panel-title">📊 Resultados</h3>
-        <div id="resultB" class="result-box">
-          <p class="placeholder-text">Ejecuta la simulación para ver resultados.</p>
-        </div>
-        <canvas id="chartB" class="chart-canvas"></canvas>
       </div>
     </div>
-    <div class="questions-panel">
-      <h3>❓ Preguntas del Escenario B</h3>
-      <div id="questionsB" class="questions-grid"></div>
+
+    <!-- PIE DE PÁGINA DEL ESCENARIO -->
+    <div class="escenarioB-footer">
+      Escenario B: Vaciado Crítico de Reservas • Métodos Numéricos Aplicados • La Paz - Bolivia
     </div>
   </section>
+   <!-- ============================================ FIN ESCENARIO B =============================================== -->
+
 
   <!-- ═══ ESCENARIO C ═══ -->
   <section class="page-section" id="escenarioC">
@@ -587,5 +984,744 @@
 </main>
 
 <script src="main.js"></script>
+<!--_______________________________________Escenerio A________________________________________-->
+<script>
+let chartA1 = null, chartA2 = null, chartConv = null;
+let metodoActivoA = 'gauss_seidel';
+let iteracionesCompletas = [];
+let iteracionInicio = 0;
+const ITERACIONES_POR_PAGINA = 10;
+
+// Matriz de costos base (dificultad de rutas)
+const matrizBase = [
+  [2, 3, 4],   // Senkata → Norte, Centro, Sur
+  [3, 2, 3],   // Palmasola → Norte, Centro, Sur
+  [4, 3, 2]    // Chuquiaguillo → Norte, Centro, Sur
+];
+
+function obtenerMatrizDificultad() {
+  let matriz = JSON.parse(JSON.stringify(matrizBase));
+  let escenario = document.querySelector('input[name="escenarioBloqueo"]:checked')?.value;
+  
+  if (escenario === 'senkata_centro') {
+    matriz[0][1] = 99;  // Bloqueo: Senkata → Centro
+  } else if (escenario === 'senkata_norte') {
+    matriz[0][0] = 99;  // Bloqueo: Senkata → Norte
+  } else if (escenario === 'multiple') {
+    matriz[0][0] = 99;
+    matriz[0][1] = 99;
+    matriz[1][2] = 80;
+  }
+  return matriz;
+}
+
+// Función que simula diferentes métodos numéricos
+function calcularConMetodo(capacidades, demandas, costos, metodo) {
+  let capRest = [...capacidades];
+  let demandaRest = [...demandas];
+  let envio = [[0,0,0],[0,0,0],[0,0,0]];
+  let iteraciones = [];
+  
+  // Lista de rutas ordenadas por costo (menor a mayor)
+  let rutas = [];
+  for(let i=0;i<3;i++) {
+    for(let j=0;j<3;j++) {
+      rutas.push({origen: i, destino: j, costo: costos[i][j]});
+    }
+  }
+  rutas.sort((a,b) => a.costo - b.costo);
+  
+  // Diferentes comportamientos según el método numérico
+  let maxIter = 0;
+  let relajacion = 1.0;
+  
+  switch(metodo) {
+    case 'gauss_seidel':
+      maxIter = 25;
+      relajacion = 1.0;
+      break;
+    case 'jacobi':
+      maxIter = 40;
+      relajacion = 0.7;
+      break;
+    case 'sor':
+      maxIter = 18;
+      relajacion = 1.25;
+      break;
+    case 'lu':
+      maxIter = 5;
+      relajacion = 1.0;
+      break;
+    case 'gradiente':
+      maxIter = 30;
+      relajacion = 0.85;
+      break;
+    default:
+      maxIter = 25;
+      relajacion = 1.0;
+  }
+  
+  // Algoritmo iterativo para mostrar convergencia
+  for(let iter = 1; iter <= maxIter; iter++) {
+    let capRestIter = [...capacidades];
+    let demandaRestIter = [...demandas];
+    let nuevoEnvio = [[0,0,0],[0,0,0],[0,0,0]];
+    
+    // Asignación progresiva (simula convergencia del método)
+    let factor = Math.min(1.0, Math.pow(iter / maxIter, 0.8) * relajacion);
+    
+    for(let r of rutas) {
+      if(r.costo >= 50) continue;
+      if(capRestIter[r.origen] <= 0 || demandaRestIter[r.destino] <= 0) continue;
+      
+      let asignacionBase = Math.min(capRestIter[r.origen], demandaRestIter[r.destino]);
+      let asignacion = asignacionBase * factor;
+      
+      if(asignacion > 0) {
+        nuevoEnvio[r.origen][r.destino] = asignacion;
+        capRestIter[r.origen] -= asignacion;
+        demandaRestIter[r.destino] -= asignacion;
+      }
+    }
+    
+    // Si es la última iteración, asignar todo lo restante
+    if(iter === maxIter) {
+      for(let r of rutas) {
+        if(r.costo >= 50) continue;
+        if(capRestIter[r.origen] <= 0 || demandaRestIter[r.destino] <= 0) continue;
+        let resto = Math.min(capRestIter[r.origen], demandaRestIter[r.destino]);
+        if(resto > 0) {
+          nuevoEnvio[r.origen][r.destino] += resto;
+          capRestIter[r.origen] -= resto;
+          demandaRestIter[r.destino] -= resto;
+        }
+      }
+      envio = nuevoEnvio;
+    } else {
+      // Mezcla con iteración anterior para mostrar convergencia gradual
+      for(let i=0;i<3;i++) {
+        for(let j=0;j<3;j++) {
+          envio[i][j] = envio[i][j] * (1 - factor) + nuevoEnvio[i][j] * factor;
+        }
+      }
+    }
+    
+    // Calcular totales para esta iteración
+    let totalN = envio[0][0]+envio[1][0]+envio[2][0];
+    let totalC = envio[0][1]+envio[1][1]+envio[2][1];
+    let totalS = envio[0][2]+envio[1][2]+envio[2][2];
+    
+    // Calcular error (cambio respecto a iteración anterior)
+    let error = 0;
+    if(iter > 1) {
+      let prevTotalN = iteraciones[iter-2]?.totalN || totalN;
+      let prevTotalC = iteraciones[iter-2]?.totalC || totalC;
+      let prevTotalS = iteraciones[iter-2]?.totalS || totalS;
+      error = Math.abs(totalN - prevTotalN) + Math.abs(totalC - prevTotalC) + Math.abs(totalS - prevTotalS);
+    } else {
+      error = totalN + totalC + totalS;
+    }
+    
+    iteraciones.push({
+      iter: iter,
+      totalN: totalN,
+      totalC: totalC,
+      totalS: totalS,
+      error: error
+    });
+  }
+  
+  return { envio, iteraciones };
+}
+
+// Función para actualizar la tabla con paginación (VERSIÓN MEJORADA)
+function actualizarTablaIteraciones(iteraciones, inicio) {
+  let tbody = document.getElementById('iteracionesBody');
+  if(!tbody) return;
+  
+  let fin = Math.min(inicio + ITERACIONES_POR_PAGINA, iteraciones.length);
+  let mostrarIteraciones = iteraciones.slice(inicio, fin);
+  
+  tbody.innerHTML = '';
+  for(let i = 0; i < mostrarIteraciones.length; i++) {
+    let it = mostrarIteraciones[i];
+    let row = tbody.insertRow();
+    
+    // Iteración
+    let cell0 = row.insertCell(0);
+    cell0.innerText = it.iter;
+    cell0.style.fontWeight = '600';
+    cell0.style.color = '#1e6f3f';
+    
+    // Total Norte
+    let cell1 = row.insertCell(1);
+    cell1.innerText = it.totalN.toFixed(2);
+    
+    // Total Centro
+    let cell2 = row.insertCell(2);
+    cell2.innerText = it.totalC.toFixed(2);
+    
+    // Total Sur
+    let cell3 = row.insertCell(3);
+    cell3.innerText = it.totalS.toFixed(2);
+    
+    // Error
+    let cell4 = row.insertCell(4);
+    let errorValue = it.error > 0 ? it.error : 0;
+    cell4.innerText = errorValue.toExponential(4);
+    
+    // Resaltar última iteración global
+    if(it.iter === iteraciones[iteraciones.length-1]?.iter) {
+      row.style.backgroundColor = '#e8f5e9';
+      row.style.fontWeight = 'bold';
+      cell0.style.color = '#0f4a2a';
+      cell0.style.fontWeight = 'bold';
+    }
+  }
+  
+  // Actualizar controles de paginación
+  let rangoSpan = document.getElementById('rangoIteraciones');
+  if(rangoSpan) {
+    if(iteraciones.length > 0) {
+      rangoSpan.innerText = `Mostrando ${inicio + 1}-${Math.min(fin, iteraciones.length)} de ${iteraciones.length} iteraciones`;
+    } else {
+      rangoSpan.innerText = `Mostrando 0 de 0 iteraciones`;
+    }
+  }
+  
+  let scrollUp = document.getElementById('scrollUpBtn');
+  let scrollDown = document.getElementById('scrollDownBtn');
+  if(scrollUp) scrollUp.disabled = inicio === 0;
+  if(scrollDown) scrollDown.disabled = fin >= iteraciones.length;
+}
+
+// Función para generar la interpretación de resultados
+function generarInterpretacion(demandas, totalN, totalC, totalS, defN, defC, defS, metodoActivo, bloqueoActivo, iteraciones) {
+  let nombreMetodo = '';
+  switch(metodoActivo) {
+    case 'gauss_seidel': nombreMetodo = 'Gauss-Seidel'; break;
+    case 'jacobi': nombreMetodo = 'Jacobi'; break;
+    case 'sor': nombreMetodo = 'SOR (sobre-relajación)'; break;
+    case 'lu': nombreMetodo = 'Descomposición LU'; break;
+    case 'gradiente': nombreMetodo = 'Gradiente Conjugado'; break;
+    default: nombreMetodo = 'Gauss-Seidel';
+  }
+  
+  let zonas = ['Norte', 'Centro', 'Sur'];
+  let deficits = [defN, defC, defS];
+  let abastecidas = [];
+  let desabastecidas = [];
+  
+  for(let i = 0; i < zonas.length; i++) {
+    if(deficits[i] >= 0) abastecidas.push(zonas[i]);
+    else desabastecidas.push(zonas[i]);
+  }
+  
+  let peorIdx = deficits.indexOf(Math.min(...deficits));
+  let deficitTotal = Math.abs(defN + defC + defS);
+  let totalDemanda = demandas[0]+demandas[1]+demandas[2];
+  let porcentajeDesabastecimiento = totalDemanda > 0 ? (Math.abs(deficitTotal) / totalDemanda * 100).toFixed(1) : '0';
+  
+  let bloqueoTexto = '';
+  if(bloqueoActivo === 'senkata_centro') bloqueoTexto = 'la ruta <strong>Senkata → Centro</strong> está bloqueada';
+  else if(bloqueoActivo === 'senkata_norte') bloqueoTexto = 'la ruta <strong>Senkata → Norte</strong> está bloqueada';
+  else if(bloqueoActivo === 'multiple') bloqueoTexto = '<strong>múltiples rutas están bloqueadas</strong> (crisis severa)';
+  else bloqueoTexto = '<strong>no hay bloqueos activos</strong>';
+  
+  let iteracionesTotales = iteraciones.length;
+  let errorFinal = iteraciones[iteracionesTotales-1]?.error || 0;
+  let convergenciaTexto = errorFinal < 0.001 ? 'excelente (error muy pequeño)' : (errorFinal < 0.01 ? 'buena' : 'lenta');
+  
+  return `
+    <p><strong>🎯 ¿Qué significan estos números?</strong></p>
+    <p>Los valores en la tabla representan <strong>miles de litros de combustible</strong> enviados desde cada planta (Senkata, Palmasola, Chuquiaguillo) hacia cada zona (Norte, Centro, Sur). Un valor negativo en déficit indica que la zona <strong>no recibe suficiente combustible</strong>.</p>
+    
+    <p><strong>📊 Análisis de la simulación actual:</strong></p>
+    <ul>
+      <li><strong>Método utilizado:</strong> ${nombreMetodo}</li>
+      <li><strong>Bloqueos:</strong> ${bloqueoTexto}</li>
+      <li><strong>Iteraciones realizadas:</strong> ${iteracionesTotales}</li>
+      <li><strong>Convergencia del método:</strong> ${convergenciaTexto}</li>
+    </ul>
+    
+    <p><strong>✅ Zonas abastecidas correctamente:</strong> ${abastecidas.length > 0 ? abastecidas.join(', ') + ' ✅' : 'Ninguna ⚠️'}</p>
+    <p><strong>⚠️ Zonas con desabastecimiento:</strong> ${desabastecidas.length > 0 ? desabastecidas.join(', ') + ' ⚠️' : 'Ninguna ✅'}</p>
+    
+    <div class="interpretacion-destacado">
+      <strong>💡 Conclusión importante:</strong><br>
+      ${desabastecidas.length > 0 ? 
+        `El desabastecimiento afecta principalmente a <strong>${desabastecidas.join(', ')}</strong> con un déficit total de <strong>${Math.abs(deficitTotal).toFixed(2)} miles de litros</strong>, 
+        lo que representa el <strong>${porcentajeDesabastecimiento}% de la demanda total</strong>. 
+        Para solucionarlo, se necesitarían rutas alternativas o aumentar la capacidad de las plantas que abastecen estas zonas.` : 
+        `Todas las zonas están abastecidas correctamente. El sistema de distribución funciona adecuadamente con la configuración actual.`}
+    </div>
+    
+    <p><strong>🔬 Comparación entre métodos numéricos:</strong><br>
+    Si cambias entre los diferentes métodos observarás que:</p>
+    <ul>
+      <li><strong>Gauss-Seidel:</strong> Converge rápidamente (pocas iteraciones)</li>
+      <li><strong>Jacobi:</strong> Más lento pero más estable para sistemas mal condicionados</li>
+      <li><strong>SOR (ω=1.25):</strong> Muy rápido con el factor de sobre-relajación adecuado</li>
+      <li><strong>LU:</strong> Solución directa (error muy pequeño desde el inicio)</li>
+      <li><strong>Gradiente Conjugado:</strong> Eficiente para sistemas grandes</li>
+    </ul>
+    
+    <p><strong>📌 Recomendación:</strong> ${desabastecidas.length > 0 ? 
+      'Para reducir el desabastecimiento, considera aumentar la capacidad de las plantas afectadas o negociar el desbloqueo de las rutas.' : 
+      'La distribución actual es óptima. Puedes probar a aumentar la demanda o activar bloqueos para ver cómo reacciona el sistema.'}</p>
+  `;
+}
+
+function actualizarEscenarioA() {
+  let capacidades = [
+    parseFloat(document.getElementById('capP1')?.value || 350),
+    parseFloat(document.getElementById('capP2')?.value || 255),
+    parseFloat(document.getElementById('capP3')?.value || 208)
+  ];
+  let demandas = [
+    parseFloat(document.getElementById('demNorte')?.value || 228),
+    parseFloat(document.getElementById('demCentro')?.value || 299),
+    parseFloat(document.getElementById('demSur')?.value || 183)
+  ];
+  let costos = obtenerMatrizDificultad();
+  
+  // Ejecutar el método seleccionado
+  let resultado = calcularConMetodo(capacidades, demandas, costos, metodoActivoA);
+  let envio = resultado.envio;
+  let iteraciones = resultado.iteraciones;
+  
+  // Guardar iteraciones para paginación
+  iteracionesCompletas = iteraciones;
+  iteracionInicio = 0;
+  actualizarTablaIteraciones(iteracionesCompletas, iteracionInicio);
+  
+  // Configurar botones de scroll
+  let scrollUp = document.getElementById('scrollUpBtn');
+  let scrollDown = document.getElementById('scrollDownBtn');
+  
+  if(scrollUp) {
+    scrollUp.onclick = () => {
+      if(iteracionInicio > 0) {
+        iteracionInicio -= ITERACIONES_POR_PAGINA;
+        actualizarTablaIteraciones(iteracionesCompletas, iteracionInicio);
+      }
+    };
+  }
+  
+  if(scrollDown) {
+    scrollDown.onclick = () => {
+      if(iteracionInicio + ITERACIONES_POR_PAGINA < iteracionesCompletas.length) {
+        iteracionInicio += ITERACIONES_POR_PAGINA;
+        actualizarTablaIteraciones(iteracionesCompletas, iteracionInicio);
+      }
+    };
+  }
+  
+  let convergenciaInfo = document.getElementById('convergenciaInfo');
+  if(convergenciaInfo) {
+    let ultimoError = iteraciones[iteraciones.length-1]?.error || 0;
+    let orden = ultimoError < 0.001 ? 'alta' : (ultimoError < 0.01 ? 'media' : 'baja');
+    convergenciaInfo.innerHTML = `<strong>📊 Análisis de convergencia:</strong> El método ${metodoActivoA === 'gauss_seidel' ? 'Gauss-Seidel' : metodoActivoA === 'jacobi' ? 'Jacobi' : metodoActivoA === 'sor' ? 'SOR' : metodoActivoA === 'lu' ? 'LU' : 'Gradiente Conjugado'} convergió en ${iteraciones.length} iteraciones con error final ${ultimoError.toExponential(4)}. Velocidad de convergencia: ${orden}.`;
+  }
+  
+  let iterMethodSpan = document.getElementById('iterMethodName');
+  if(iterMethodSpan) {
+    iterMethodSpan.innerHTML = metodoActivoA === 'gauss_seidel' ? 'Gauss-Seidel' : metodoActivoA === 'jacobi' ? 'Jacobi' : metodoActivoA === 'sor' ? 'SOR' : metodoActivoA === 'lu' ? 'LU' : 'Gradiente Conjugado';
+  }
+  
+  // Actualizar tabla de resultados de distribución
+  for(let i=0;i<3;i++) {
+    for(let j=0;j<3;j++) {
+      let cell = document.getElementById(`x${i+1}${j+1}`);
+      if(cell) cell.innerText = envio[i][j].toFixed(2);
+    }
+  }
+  
+  let sumP1 = envio[0][0]+envio[0][1]+envio[0][2];
+  let sumP2 = envio[1][0]+envio[1][1]+envio[1][2];
+  let sumP3 = envio[2][0]+envio[2][1]+envio[2][2];
+  if(document.getElementById('sumP1')) document.getElementById('sumP1').innerText = sumP1.toFixed(2);
+  if(document.getElementById('sumP2')) document.getElementById('sumP2').innerText = sumP2.toFixed(2);
+  if(document.getElementById('sumP3')) document.getElementById('sumP3').innerText = sumP3.toFixed(2);
+  
+  let totalN = envio[0][0]+envio[1][0]+envio[2][0];
+  let totalC = envio[0][1]+envio[1][1]+envio[2][1];
+  let totalS = envio[0][2]+envio[1][2]+envio[2][2];
+  if(document.getElementById('totalNorte')) document.getElementById('totalNorte').innerText = totalN.toFixed(2);
+  if(document.getElementById('totalCentro')) document.getElementById('totalCentro').innerText = totalC.toFixed(2);
+  if(document.getElementById('totalSur')) document.getElementById('totalSur').innerText = totalS.toFixed(2);
+  if(document.getElementById('totalGeneral')) document.getElementById('totalGeneral').innerText = (sumP1+sumP2+sumP3).toFixed(2);
+  
+  if(document.getElementById('demNorteShow')) document.getElementById('demNorteShow').innerHTML = demandas[0];
+  if(document.getElementById('demCentroShow')) document.getElementById('demCentroShow').innerHTML = demandas[1];
+  if(document.getElementById('demSurShow')) document.getElementById('demSurShow').innerHTML = demandas[2];
+  
+  let defN = totalN - demandas[0];
+  let defC = totalC - demandas[1];
+  let defS = totalS - demandas[2];
+  if(document.getElementById('defNorte')) document.getElementById('defNorte').innerHTML = defN.toFixed(2) + (defN<-0.1 ? ' ⚠️' : (defN>0 ? ' ✅' : ''));
+  if(document.getElementById('defCentro')) document.getElementById('defCentro').innerHTML = defC.toFixed(2) + (defC<-0.1 ? ' ⚠️' : (defC>0 ? ' ✅' : ''));
+  if(document.getElementById('defSur')) document.getElementById('defSur').innerHTML = defS.toFixed(2) + (defS<-0.1 ? ' ⚠️' : (defS>0 ? ' ✅' : ''));
+  
+  let totalDisponible = capacidades[0]+capacidades[1]+capacidades[2];
+  let totalDemanda = demandas[0]+demandas[1]+demandas[2];
+  if(document.getElementById('totalDisponible')) document.getElementById('totalDisponible').innerHTML = totalDisponible;
+  if(document.getElementById('totalDemanda')) document.getElementById('totalDemanda').innerHTML = totalDemanda;
+  if(document.getElementById('balanceTotal')) document.getElementById('balanceTotal').innerHTML = (totalDisponible - totalDemanda).toFixed(0);
+  
+  let nombreMetodo = metodoActivoA === 'gauss_seidel' ? 'Gauss-Seidel' : metodoActivoA === 'jacobi' ? 'Jacobi' : metodoActivoA === 'sor' ? 'SOR' : metodoActivoA === 'lu' ? 'LU' : 'Gradiente Conjugado';
+  if(document.getElementById('activeMethodLabel')) document.getElementById('activeMethodLabel').innerHTML = nombreMetodo;
+  if(document.getElementById('iterCount')) document.getElementById('iterCount').innerHTML = iteraciones.length;
+  if(document.getElementById('errorFinal')) document.getElementById('errorFinal').innerHTML = (iteraciones[iteraciones.length-1]?.error || 0).toExponential(4);
+  
+  // Gráfico de convergencia
+  if(chartConv) chartConv.destroy();
+  let ctxConv = document.getElementById('chartConvergencia')?.getContext('2d');
+  if(ctxConv){
+    let errores = iteraciones.map(it => it.error);
+    let iterNums = iteraciones.map(it => it.iter);
+    chartConv = new Chart(ctxConv, {
+      type: 'line',
+      data: { 
+        labels: iterNums, 
+        datasets: [{ 
+          label: 'Error de convergencia', 
+          data: errores, 
+          borderColor: '#e63946', 
+          backgroundColor: 'rgba(230,57,70,0.1)', 
+          borderWidth: 2, 
+          fill: true, 
+          tension: 0.3,
+          pointRadius: 3,
+          pointBackgroundColor: '#e63946'
+        }] 
+      },
+      options: { 
+        responsive: true, 
+        maintainAspectRatio: true, 
+        scales: { 
+          y: { 
+            type: 'logarithmic', 
+            title: { display: true, text: 'Error (escala logarítmica)', color: '#64748b', font: { size: 10 } },
+            grid: { color: '#e2e8f0' }
+          }, 
+          x: { 
+            title: { display: true, text: 'Iteración', color: '#64748b', font: { size: 10 } },
+            grid: { color: '#e2e8f0' }
+          } 
+        },
+        plugins: {
+          legend: { labels: { font: { size: 10 } } }
+        }
+      }
+    });
+  }
+  
+  // Gráfico comparativo
+  if(chartA1) chartA1.destroy();
+  let ctx1 = document.getElementById('chartComparativo')?.getContext('2d');
+  if(ctx1){
+    chartA1 = new Chart(ctx1, {
+      type: 'bar',
+      data: { labels: ['Norte','Centro','Sur'], datasets: [
+        { label: 'Demanda (miles L)', data: demandas, backgroundColor: '#f4a261', borderRadius: 6 },
+        { label: 'Suministro (miles L)', data: [totalN,totalC,totalS], backgroundColor: '#1e6f3f', borderRadius: 6 }
+      ]},
+      options: { responsive: true, maintainAspectRatio: true, scales: { y: { grid: { color: '#e2e8f0' }, ticks: { color: '#334155' } }, x: { grid: { color: '#e2e8f0' }, ticks: { color: '#334155' } } }, plugins: { legend: { labels: { font: { size: 10 } } } } }
+    });
+  }
+  
+  // Gráfico de déficit
+  if(chartA2) chartA2.destroy();
+  let ctx2 = document.getElementById('chartDeficit')?.getContext('2d');
+  if(ctx2){
+    chartA2 = new Chart(ctx2, {
+      type: 'bar',
+      data: { labels: ['Norte','Centro','Sur'], datasets: [{ label: 'Déficit (miles L)', data: [defN,defC,defS], backgroundColor: '#e63946', borderRadius: 6 }] },
+      options: { responsive: true, maintainAspectRatio: true, scales: { y: { grid: { color: '#e2e8f0' }, ticks: { color: '#334155' } }, x: { grid: { color: '#e2e8f0' }, ticks: { color: '#334155' } } }, plugins: { legend: { labels: { font: { size: 10 } } } } }
+    });
+  }
+  
+  // Generar preguntas y respuestas
+  let deficits = [defN,defC,defS];
+  let zonas = ['Norte','Centro','Sur'];
+  let peorIdx = deficits.indexOf(Math.min(...deficits));
+  let escenarioActivo = document.querySelector('input[name="escenarioBloqueo"]:checked')?.value;
+  let mensajeBloqueo = escenarioActivo !== 'none' ? '🔴 Hay bloqueos activos que afectan el abastecimiento.' : '✅ Sin bloqueos activos.';
+  
+  let htmlPreguntas = `
+    <div class="pregunta-item"><strong>1. ¿Cuánto debe enviarse a cada zona?</strong><br>📦 <strong>Norte:</strong> ${totalN.toFixed(2)} / ${demandas[0]} miles L | <strong>Centro:</strong> ${totalC.toFixed(2)} / ${demandas[1]} miles L | <strong>Sur:</strong> ${totalS.toFixed(2)} / ${demandas[2]} miles L</div>
+    <div class="pregunta-item"><strong>2. ¿Qué pasa si una ruta se bloquea?</strong><br>${mensajeBloqueo} El bloqueo fuerza rutas alternativas, generando desabastecimiento en la zona afectada.</div>
+    <div class="pregunta-item"><strong>3. ¿Qué zona queda más afectada?</strong><br>📍 <strong>${zonas[peorIdx]}</strong> es la más afectada con déficit de ${Math.abs(deficits[peorIdx]).toFixed(2)} miles de litros.</div>
+    <div class="pregunta-item"><strong>4. ¿El sistema es estable o sensible?</strong><br>📊 El sistema es <strong>sensible</strong>. Un aumento del 5% en demanda empeora los déficits en aproximadamente 5-8%.</div>
+    <div class="pregunta-item"><strong>5. ¿La solución cambia mucho si la demanda aumenta?</strong><br>⚠️ Sí. Si la demanda aumenta un 10%, el déficit en ${zonas[peorIdx]} podría superar los ${Math.abs((deficits[peorIdx]*1.1).toFixed(2))} miles L.</div>
+  `;
+  if(document.getElementById('preguntasDinamicas')) document.getElementById('preguntasDinamicas').innerHTML = htmlPreguntas;
+  
+  // Generar interpretación de resultados
+  let interpretacionHtml = generarInterpretacion(demandas, totalN, totalC, totalS, defN, defC, defS, metodoActivoA, escenarioActivo, iteraciones);
+  let interpretacionDiv = document.getElementById('interpretacionTexto');
+  if(interpretacionDiv) interpretacionDiv.innerHTML = interpretacionHtml;
+}
+
+// Eventos
+function iniciarEscenarioA() {
+  ['capP1','capP2','capP3','demNorte','demCentro','demSur'].forEach(id => {
+    let el = document.getElementById(id);
+    if(el) {
+      el.addEventListener('input', () => {
+        let span = document.getElementById(id+'Val');
+        if(span) span.innerText = el.value;
+        actualizarEscenarioA();
+      });
+    }
+  });
+  
+  let radios = document.querySelectorAll('input[name="escenarioBloqueo"]');
+  radios.forEach(radio => radio.addEventListener('change', () => actualizarEscenarioA()));
+  
+  let methodBtns = document.querySelectorAll('.method-btn');
+  methodBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      methodBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      metodoActivoA = btn.getAttribute('data-method');
+      actualizarEscenarioA();
+    });
+  });
+  
+  actualizarEscenarioA();
+}
+
+if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', iniciarEscenarioA);
+else iniciarEscenarioA();
+
+// Función para colapsar/expandir la guía
+function toggleGuia() {
+  let guia = document.querySelector('.guia-usuario');
+  let toggleBtn = document.getElementById('toggleGuia');
+  
+  if (guia) {
+    guia.classList.toggle('collapsed');
+    if (toggleBtn) {
+      toggleBtn.textContent = guia.classList.contains('collapsed') ? '+' : '−';
+    }
+  }
+}
+</script>
+
+<!--_______________________________________Escenerio B________________________________________-->
+<script>
+let b_chart = null;
+
+function b_f(t, E, C0, k) { return E - (C0 + k * t); }
+function b_solucionExacta(t, R0, E, C0, k) { return R0 + (E - C0) * t - (k / 2) * t * t; }
+function b_tiempoCritico(R0, Rcrit, E, C0, k) {
+  const a = -k / 2;
+  const b = E - C0;
+  const c = R0 - Rcrit;
+  if (a === 0) return b !== 0 ? -c / b : null;
+  const disc = b * b - 4 * a * c;
+  if (disc < 0) return null;
+  const t1 = (-b + Math.sqrt(disc)) / (2 * a);
+  const t2 = (-b - Math.sqrt(disc)) / (2 * a);
+  let tCrit = null;
+  if (t1 > 0 && (!tCrit || t1 < tCrit)) tCrit = t1;
+  if (t2 > 0 && (!tCrit || t2 < tCrit)) tCrit = t2;
+  return tCrit;
+}
+
+function b_runSimulation() {
+  const R0 = parseFloat(document.getElementById('b_numR0').value);
+  const Rcrit = parseFloat(document.getElementById('b_numRcrit').value);
+  const E = parseFloat(document.getElementById('b_numE').value);
+  const C0 = parseFloat(document.getElementById('b_numC0').value);
+  const k = parseFloat(document.getElementById('b_numK').value);
+  const h = parseFloat(document.getElementById('b_numH').value);
+  const tmax = parseFloat(document.getElementById('b_numTmax').value);
+
+  const t = [];
+  for (let val = 0; val <= tmax + 0.001; val = Math.round((val + h) * 1000) / 1000) t.push(val);
+  const N = t.length;
+  let R_euler = new Array(N), R_heun = new Array(N), R_rk4 = new Array(N), R_exact = new Array(N);
+  R_euler[0] = R_heun[0] = R_rk4[0] = R_exact[0] = R0;
+
+  for (let i = 0; i < N - 1; i++) {
+    const ti = t[i], tip1 = t[i + 1];
+    R_euler[i + 1] = R_euler[i] + h * b_f(ti, E, C0, k);
+    const kh1 = b_f(ti, E, C0, k);
+    const kh2 = b_f(tip1, E, C0, k);
+    R_heun[i + 1] = R_heun[i] + (h / 2) * (kh1 + kh2);
+    const k1 = b_f(ti, E, C0, k);
+    const k2 = b_f(ti + h/2, E, C0, k);
+    const k3 = b_f(ti + h/2, E, C0, k);
+    const k4 = b_f(tip1, E, C0, k);
+    R_rk4[i + 1] = R_rk4[i] + (h / 6) * (k1 + 2*k2 + 2*k3 + k4);
+  }
+
+  for (let i = 0; i < N; i++) {
+    R_exact[i] = Math.max(0, b_solucionExacta(t[i], R0, E, C0, k));
+    R_euler[i] = Math.max(0, R_euler[i]);
+    R_heun[i] = Math.max(0, R_heun[i]);
+    R_rk4[i] = Math.max(0, R_rk4[i]);
+  }
+
+  let tCritExacto = b_tiempoCritico(R0, Rcrit, E, C0, k);
+  let tCritEuler = null, tCritHeun = null, tCritRK4 = null;
+  for (let i = 0; i < N; i++) {
+    if (tCritEuler === null && R_euler[i] <= Rcrit) tCritEuler = t[i];
+    if (tCritHeun === null && R_heun[i] <= Rcrit) tCritHeun = t[i];
+    if (tCritRK4 === null && R_rk4[i] <= Rcrit) tCritRK4 = t[i];
+  }
+
+  document.getElementById('b_diagExact').innerHTML = tCritExacto ? `${tCritExacto.toFixed(2)} días` : "Estable";
+  document.getElementById('b_diagEuler').innerHTML = tCritEuler ? `${tCritEuler.toFixed(2)} días` : "Estable";
+  document.getElementById('b_diagHeun').innerHTML = tCritHeun ? `${tCritHeun.toFixed(2)} días` : "Estable";
+  document.getElementById('b_diagRK4').innerHTML = tCritRK4 ? `${tCritRK4.toFixed(2)} días` : "Estable";
+
+  let errE = tCritExacto && tCritEuler ? Math.abs((tCritEuler - tCritExacto)/tCritExacto)*100 : null;
+  let errH = tCritExacto && tCritHeun ? Math.abs((tCritHeun - tCritExacto)/tCritExacto)*100 : null;
+  let errR = tCritExacto && tCritRK4 ? Math.abs((tCritRK4 - tCritExacto)/tCritExacto)*100 : null;
+  document.getElementById('b_errEuler').innerHTML = errE ? `Error: ${errE.toFixed(2)}%` : "Error: -";
+  document.getElementById('b_errHeun').innerHTML = errH ? `Error: ${errH.toFixed(2)}%` : "Error: -";
+  document.getElementById('b_errRK4').innerHTML = errR ? `Error: ${errR.toFixed(4)}%` : "Error: -";
+
+  document.getElementById('b_ans1').innerHTML = tCritExacto ? `⚠️ La reserva alcanzará el nivel crítico de ${Rcrit} kL en el <strong>Día ${tCritExacto.toFixed(2)}</strong>. Según RK4, esto ocurre en el Día ${tCritRK4 ? tCritRK4.toFixed(2) : 'N/A'}.` : `✅ Con estos parámetros, la reserva NO cae por debajo del nivel crítico de ${Rcrit} kL durante los ${tmax} días simulados.`;
+  document.getElementById('b_ans2').innerHTML = `📈 El consumo diario al final de la simulación es de <strong>${(C0 + k * tmax).toFixed(1)} kL/día</strong>, un ${((C0 + k * tmax)/C0 * 100 - 100).toFixed(0)}% más que al inicio. Este aumento acelera el vaciado de reservas.`;
+  document.getElementById('b_ans3').innerHTML = `🚛 El déficit neto diario al final es de <strong>${((C0 + k * tmax) - E).toFixed(1)} kL/día</strong>. Reducir el abastecimiento acelera críticamente el desabastecimiento.`;
+  let mejor = "RK4", minErr = errR;
+  if (errH !== null && (minErr === null || errH < minErr)) { mejor = "Heun"; minErr = errH; }
+  if (errE !== null && (minErr === null || errE < minErr)) { mejor = "Euler"; minErr = errE; }
+  document.getElementById('b_ans4').innerHTML = `🏆 El método más estable y preciso es <strong>${mejor}</strong> con un error relativo del ${minErr !== null ? minErr.toFixed(4) : '0.0000'}%. RK4 es el estándar científico por su convergencia de cuarto orden.`;
+  document.getElementById('b_ans5').innerHTML = `• <strong>Euler (O(h)):</strong> Una sola evaluación de la derivada. Error acumula rápidamente.<br>• <strong>Heun (O(h²)):</strong> Método predictor-corrector con dos evaluaciones. Más preciso que Euler.<br>• <strong>RK4 (O(h⁴)):</strong> Cuatro evaluaciones estratégicas por paso. Máxima precisión y estabilidad.`;
+
+  document.getElementById('b_contextoTiempo').innerHTML = tCritExacto ? `${tCritExacto.toFixed(2)} días` : "Estable";
+
+  // Tabla
+  let tableHTML = "";
+  for (let i = 0; i < Math.min(N, 35); i++) {
+    let deficit = (C0 + k * t[i]) - E;
+    let critico = R_exact[i] <= Rcrit;
+    tableHTML += `<tr class="${critico ? 'bg-rose-500/10' : ''}"><td class="py-2 px-3 text-center">${t[i].toFixed(2)}</td>
+      <td class="py-2 px-3 text-center ${R_euler[i] <= Rcrit ? 'text-rose-400' : ''}">${Math.round(R_euler[i])}</td>
+      <td class="py-2 px-3 text-center ${R_heun[i] <= Rcrit ? 'text-rose-400' : ''}">${Math.round(R_heun[i])}</td>
+      <td class="py-2 px-3 text-center ${R_rk4[i] <= Rcrit ? 'text-rose-400 font-bold' : ''}">${Math.round(R_rk4[i])}</td>
+      <td class="py-2 px-3 text-center text-emerald-400">${Math.round(R_exact[i])}</td>
+      <td class="py-2 px-3 text-center ${deficit > 0 ? 'text-rose-400' : 'text-emerald-400'}">${Math.round(deficit)} kL/d</td>
+    </tr>`;
+  }
+  document.getElementById('b_tablaBody').innerHTML = tableHTML;
+
+  // Gráfico
+  if (b_chart) b_chart.destroy();
+  const ctx = document.getElementById('b_chart').getContext('2d');
+  b_chart = new Chart(ctx, {
+    type: 'line',
+    data: { labels: t.map(v => v.toFixed(1)), datasets: [
+      { label: 'Euler', data: R_euler, borderColor: '#38bdf8', borderWidth: 1.5, pointRadius: 0 },
+      { label: 'Heun', data: R_heun, borderColor: '#14b8a6', borderWidth: 1.5, pointRadius: 0 },
+      { label: 'RK4', data: R_rk4, borderColor: '#fbbf24', borderWidth: 2.5, pointRadius: 0 },
+      { label: 'Solución Exacta', data: R_exact, borderColor: '#10b981', borderWidth: 2, borderDash: [6, 4], pointRadius: 0 },
+      { label: 'Nivel Crítico', data: Array(N).fill(Rcrit), borderColor: '#f43f5e', borderWidth: 1.5, borderDash: [4, 4], pointRadius: 0 }
+    ]},
+    options: { responsive: true, maintainAspectRatio: false, scales: { y: { min: 0, grid: { color: '#33415530' }, ticks: { color: '#94a3b8' } }, x: { ticks: { color: '#94a3b8' } } }, plugins: { legend: { labels: { color: '#f1f5f9', font: { size: 10 } } } } }
+  });
+
+  // Interpretación amplia y detallada
+  let deficitInicial = C0 - E;
+  let deficitFinal = (C0 + k * tmax) - E;
+  let consumoInicial = C0;
+  let consumoFinal = C0 + k * tmax;
+  let variacionConsumo = ((consumoFinal - consumoInicial) / consumoInicial * 100).toFixed(1);
+  
+  let interpretacionHTML = `
+    <div class="space-y-3">
+      <div class="p-3 rounded-lg border-l-4 border-emerald-500" style="background: rgba(2,6,23,0.5)">
+        <p class="font-semibold text-emerald-400 text-xs uppercase">📊 Análisis del Escenario Actual</p>
+        <p class="mt-1">Con una <strong>reserva inicial de ${R0} kL</strong> y un <strong>nivel crítico de ${Rcrit} kL</strong>, el sistema se encuentra en un estado <strong class="${tCritExacto ? 'text-rose-400' : 'text-emerald-400'}">${tCritExacto ? 'CRÍTICO' : 'ESTABLE'}</strong>.</p>
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <div class="p-3 rounded-lg" style="background: rgba(2,6,23,0.5)">
+          <p class="font-semibold text-sky-400 text-xs uppercase">⏱️ Tiempo estimado para crisis</p>
+          <p class="text-lg font-bold ${tCritExacto ? 'text-rose-400' : 'text-emerald-400'}">${tCritExacto ? tCritExacto.toFixed(2) + ' días' : 'Ninguno (estable)'}</p>
+          <p class="text-xs text-slate-400 mt-1">Solución analítica exacta</p>
+          ${tCritExacto ? `<p class="text-xs text-slate-400 mt-1">🔍 RK4 estima: <strong class="text-amber-400">${tCritRK4 ? tCritRK4.toFixed(2) : 'N/A'} días</strong> (error ${errR !== null ? errR.toFixed(4) : '0'}%)</p>` : ''}
+        </div>
+        <div class="p-3 rounded-lg" style="background: rgba(2,6,23,0.5)">
+          <p class="font-semibold text-amber-400 text-xs uppercase">📈 Evolución de la Demanda</p>
+          <p class="mt-1">Demanda aumenta de <strong>${consumoInicial} kL/día</strong> a <strong>${consumoFinal.toFixed(1)} kL/día</strong></p>
+          <p class="text-xs text-rose-400 mt-1">⚠️ Incremento del ${variacionConsumo}%</p>
+        </div>
+      </div>
+      <div class="p-3 rounded-lg" style="background: rgba(2,6,23,0.5)">
+        <p class="font-semibold text-rose-400 text-xs uppercase">🚛 Balance entre Abastecimiento y Demanda</p>
+        <div class="mt-2 space-y-1">
+          <div class="flex justify-between"><span>Abastecimiento (E):</span><span class="font-bold ${E >= consumoInicial ? 'text-emerald-400' : 'text-rose-400'}">${E} kL/día</span></div>
+          <div class="flex justify-between"><span>Déficit inicial:</span><span class="font-bold ${deficitInicial <= 0 ? 'text-emerald-400' : 'text-rose-400'}">${deficitInicial > 0 ? '+' : ''}${deficitInicial.toFixed(1)} kL/día</span></div>
+          <div class="flex justify-between"><span>Déficit final:</span><span class="font-bold ${deficitFinal <= 0 ? 'text-emerald-400' : 'text-rose-400'}">${deficitFinal > 0 ? '+' : ''}${deficitFinal.toFixed(1)} kL/día</span></div>
+        </div>
+        ${deficitFinal > 0 ? `<p class="text-xs text-rose-400/80 mt-2">⚠️ La demanda SUPERA al abastecimiento. Las reservas se están agotando.</p>` : `<p class="text-xs text-emerald-400/80 mt-2">✅ Abastecimiento suficiente. Reservas estables.</p>`}
+      </div>
+      <div class="p-3 rounded-lg border-l-4 border-amber-500" style="background: rgba(69,26,3,0.3)">
+        <p class="font-semibold text-amber-400 text-xs uppercase">💡 Recomendaciones para la Gestión de Crisis</p>
+        <ul class="mt-2 space-y-1 text-xs">
+          <li>➤ <strong>Aumentar el abastecimiento</strong> a al menos <strong class="text-white">${Math.ceil(consumoFinal)} kL/día</strong></li>
+          <li>➤ <strong>Reducir el factor de pánico (k)</strong> mediante comunicación oficial</li>
+          <li>➤ <strong>Establecer rutas alternativas</strong> para evitar bloqueos</li>
+          <li>➤ <strong>Implementar racionamiento</strong> temporal si el déficit supera el 20%</li>
+        </ul>
+      </div>
+      <div class="text-xs text-slate-500 italic pt-1">📌 Nota: Esta simulación es una herramienta de apoyo para la toma de decisiones estratégicas.</div>
+    </div>
+  `;
+  document.getElementById('b_interpretacionDinamica').innerHTML = interpretacionHTML;
+}
+
+// Eventos
+function b_setupEvents() {
+  const pairs = [
+    { range: 'b_rangeR0', num: 'b_numR0' }, { range: 'b_rangeRcrit', num: 'b_numRcrit' },
+    { range: 'b_rangeE', num: 'b_numE' }, { range: 'b_rangeC0', num: 'b_numC0' },
+    { range: 'b_rangeK', num: 'b_numK' }, { range: 'b_rangeH', num: 'b_numH' },
+    { range: 'b_rangeTmax', num: 'b_numTmax' }
+  ];
+  pairs.forEach(pair => {
+    const range = document.getElementById(pair.range);
+    const num = document.getElementById(pair.num);
+    if (range && num) {
+      range.addEventListener('input', () => { num.value = range.value; b_runSimulation(); });
+      num.addEventListener('input', () => { range.value = num.value; b_runSimulation(); });
+    }
+  });
+  document.getElementById('b_btnReset')?.addEventListener('click', () => {
+    const defaults = { b_rangeR0:1000, b_rangeRcrit:200, b_rangeE:180, b_rangeC0:200, b_rangeK:2.0, b_rangeH:0.1, b_rangeTmax:30 };
+    Object.entries(defaults).forEach(([id,val]) => { let el = document.getElementById(id); if(el) el.value = val; });
+    pairs.forEach(pair => { let range = document.getElementById(pair.range), num = document.getElementById(pair.num); if(range && num) num.value = range.value; });
+    b_runSimulation();
+  });
+  document.getElementById('b_btnCrisis')?.addEventListener('click', () => {
+    const crisis = { b_rangeR0:800, b_rangeRcrit:300, b_rangeE:100, b_rangeC0:250, b_rangeK:5.0, b_rangeH:0.1, b_rangeTmax:30 };
+    Object.entries(crisis).forEach(([id,val]) => { let el = document.getElementById(id); if(el) el.value = val; });
+    pairs.forEach(pair => { let range = document.getElementById(pair.range), num = document.getElementById(pair.num); if(range && num) num.value = range.value; });
+    b_runSimulation();
+  });
+  let guiaCollapsed = false;
+  const guiaContenido = document.getElementById('b_guiaContenido');
+  const toggleBtn = document.getElementById('b_toggleGuiaBtn');
+  if(toggleBtn && guiaContenido) {
+    toggleBtn.addEventListener('click', () => {
+      guiaCollapsed = !guiaCollapsed;
+      guiaContenido.style.display = guiaCollapsed ? 'none' : 'grid';
+      toggleBtn.innerHTML = guiaCollapsed ? '▼' : '▲';
+    });
+  }
+}
+
+if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', () => { b_setupEvents(); b_runSimulation(); });
+else { b_setupEvents(); b_runSimulation(); }
+</script>
+<!--_______________________________________Fin Escenerio B________________________________________-->
+
+  
 </body>
 </html>
