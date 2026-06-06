@@ -1534,7 +1534,7 @@ function generarInterpretacion(demandas, totalN, totalC, totalS, defN, defC, def
     <p><strong>⚠️ Zonas con desabastecimiento:</strong> ${desabastecidas.length > 0 ? desabastecidas.join(', ') + ' ⚠️' : 'Ninguna ✅'}</p>
     
     <div class="interpretacion-destacado">
-      // <strong>💡 Conclusión importante:</strong><br>
+      <strong>💡 Conclusión importante:</strong><br>
       ${desabastecidas.length > 0 ? 
         `El desabastecimiento afecta principalmente a <strong>${desabastecidas.join(', ')}</strong> con un déficit total de <strong>${Math.abs(deficitTotal).toFixed(2)} miles de litros</strong>, 
         lo que representa el <strong>${porcentajeDesabastecimiento}% de la demanda total</strong>. 
